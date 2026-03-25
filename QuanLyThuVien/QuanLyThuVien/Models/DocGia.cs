@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace QuanLyThuVien.Models
 {
-    public partial class DocGium
+    public partial class DocGia
     {
-        public DocGium()
+        public DocGia()
         {
             PhieuMuons = new HashSet<PhieuMuon>();
         }

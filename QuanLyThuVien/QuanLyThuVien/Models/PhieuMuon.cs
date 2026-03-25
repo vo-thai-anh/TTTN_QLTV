@@ -17,7 +17,7 @@ namespace QuanLyThuVien.Models
         public DateTime? Ngaytra { get; set; }
         public string Ghichu { get; set; } = null!;
 
-        public virtual DocGium? MadocgiaNavigation { get; set; }
+        public virtual DocGia? MadocgiaNavigation { get; set; }
         public virtual NhanVien? ManhanvienNavigation { get; set; }
         public virtual ICollection<ChiTietMuon> ChiTietMuons { get; set; }
     }

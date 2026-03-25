@@ -5,10 +5,6 @@ namespace QuanLyThuVien.Models
 {
     public partial class PhieuTra
     {
-        public PhieuTra()
-        {
-            ChiTietMuons = new HashSet<ChiTietMuon>();
-        }
 
         public int MaPhieuTra { get; set; }
         public int? Manhanvien { get; set; }
@@ -16,6 +12,6 @@ namespace QuanLyThuVien.Models
         public string Ghichu { get; set; } = null!;
 
         public virtual NhanVien? ManhanvienNavigation { get; set; }
-        public virtual ICollection<ChiTietMuon> ChiTietMuons { get; set; }
+        public virtual ChiTietMuon? MaChiTietnavigation { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace QuanLyThuVien.Models
         }
 
         public virtual DbSet<ChiTietMuon> ChiTietMuons { get; set; } = null!;
-        public virtual DbSet<DocGium> DocGia { get; set; } = null!;
+        public virtual DbSet<DocGia> DocGia { get; set; } = null!;
         public virtual DbSet<LoaiSach> LoaiSaches { get; set; } = null!;
         public virtual DbSet<NhaXuatBan> NhaXuatBans { get; set; } = null!;
         public virtual DbSet<NhanVien> NhanViens { get; set; } = null!;
@@ -63,7 +63,7 @@ namespace QuanLyThuVien.Models
                     .HasConstraintName("FK_CT_SachMuon");
             });
 
-            modelBuilder.Entity<DocGium>(entity =>
+            modelBuilder.Entity<DocGia>(entity =>
             {
                 entity.HasKey(e => e.MaDocGia);
 

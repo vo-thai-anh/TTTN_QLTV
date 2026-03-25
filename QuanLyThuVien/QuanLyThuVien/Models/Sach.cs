@@ -8,6 +8,8 @@ namespace QuanLyThuVien.Models
         public Sach()
         {
             SachMuons = new HashSet<SachMuon>();
+            TacGias = new HashSet<TacGiac>();
+            LoaiSachs = new HashSet<LoaiSach>();
         }
 
         public int MaSach { get; set; }
@@ -18,9 +20,9 @@ namespace QuanLyThuVien.Models
         public int? Soluong { get; set; }
         public int? Maloai { get; set; }
         public int? Manxb { get; set; }
-
-        public virtual LoaiSach? MaloaiNavigation { get; set; }
+        public virtual ICollection<LoaiSach> LoaiSachs { get; set; }
+        public virtual ICollection<TacGiac> TacGias {   get;set; }
         public virtual NhaXuatBan? ManxbNavigation { get; set; }
         public virtual ICollection<SachMuon> SachMuons { get; set; }
     }
-}
+}g
