@@ -1,0 +1,88 @@
+﻿<Window x:Class="QLTV_WPF.UI.QL_SachMuon"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Chi Tiết Sách Mượn" Height="500" Width="700" WindowStartupLocation="CenterScreen">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="CHI TIẾT SÁCH" 
+                   FontSize="22" 
+                   FontWeight="Bold" 
+                   Foreground="#2C3E50" 
+                   HorizontalAlignment="Center" 
+                   Margin="0,0,0,10"/>
+
+        <Border Grid.Row="1" Background="White" CornerRadius="5" Padding="15" BorderBrush="#BDC3C7" BorderThickness="1">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Chọn đầu sách:" 
+                           VerticalAlignment="Center" 
+                           FontWeight="Bold" 
+                           Margin="0,0,10,0"/>
+                <ComboBox x:Name="cbChonSach" 
+                          Width="250" 
+                          Height="30" 
+                          Margin="0,0,20,0"
+                          DisplayMemberPath="TenSach" 
+                          SelectedValuePath="MaSach"/>
+
+                <TextBlock Text="Tình trạng:" 
+                           VerticalAlignment="Center" 
+                           FontWeight="Bold" 
+                           Margin="0,0,10,0"/>
+                <TextBox x:Name="txtTinhTrang" 
+                         Width="200" 
+                         Height="30"/>
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="2" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    Margin="0,15">
+            <Button Content="➕ Nhập bản sao" 
+                    Width="130" Height="32" 
+                    Margin="5" Background="#2ECC71" 
+                    Foreground="White"/>
+            <Button Content="🗑 Hủy bản" 
+                    Width="100" 
+                    Height="32" 
+                    Margin="5" 
+                    Background="#E74C3C" 
+                    Foreground="White"/>
+        </StackPanel>
+
+        <DataGrid x:Name="dgSachMuon" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" SelectionChanged="dgSachMuon_SelectionChanged">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID Bản Sao" Binding="{Binding MaSachMuon}" Width="80"/>
+                <DataGridTextColumn Header="Tên Sách" Binding="{Binding TenSach}" Width="*"/>
+                <DataGridTextColumn Header="Tình Trạng" Binding="{Binding TinhTrang}" Width="150"/>
+
+                <DataGridTemplateColumn Header="Thao tác" Width="120">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="🎫 Mượn sách" 
+                            Padding="5,2"
+                            Background="#3498DB" 
+                            Foreground="White"
+                            FontWeight="SemiBold"
+                            Cursor="Hand"
+                            Click="btnMuonSach_Click"
+                            Tag="{Binding MaSachMuon}">
+                                <Button.Resources>
+                                    <Style TargetType="Border">
+                                        <Setter Property="CornerRadius" Value="3"/>
+                                    </Style>
+                                </Button.Resources>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
