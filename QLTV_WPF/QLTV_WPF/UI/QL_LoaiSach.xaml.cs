@@ -29,16 +29,5 @@ namespace QLTV_WPF.UI
             DataContext = new LoaiSachVM();
         }
 
-        // Hàm tải dữ liệu từ Database
-
-        private void dgLoaiSach_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (dgLoaiSach.SelectedItem is LoaiSach selected)
-            {
-                txtMaLoai.Text = selected.MaLoai.ToString();
-                txtTenLoai.Text = selected.TenLoai;
-                txtMoTa.Text = selected.MoTa;
-            }
-        }
     }
 }

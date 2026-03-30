@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QLTV_API.Models;
+using QLTV_API.ModelsDTO;
 
 namespace QLTV_API.Controllers
 {
@@ -29,18 +30,84 @@ namespace QLTV_API.Controllers
             }
         }
         [HttpPost]
-        public IActionResult them(LoaiSach ls)
+        public IActionResult themls(CLoaiSachDTO ls)
         {
             try
             {
                 LoaiSach a = new LoaiSach
                 {
-                    MaLoai = ls.MaLoai,
                     TenLoai = ls.TenLoai,
                     MoTa = ls.MoTa
                 };
+
                 db.LoaiSaches.Add(a);
                 db.SaveChanges();
+
+                return Ok(a);
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+        [HttpGet("{id}")]
+        public IActionResult getls(int id)
+        {
+            try
+            {
+                LoaiSach a = db.LoaiSaches.Find(id);
+
+                if (a == null)
+                    return NotFound();
+
+                return Ok(new
+                {
+                    Maloai = a.MaLoai,
+                    Tenloai = a.TenLoai,
+                    Mota = a.MoTa
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult suals(CLoaiSachDTO x)
+        {
+            try
+            {
+                LoaiSach a = db.LoaiSaches.Find(x.MaLoai);
+
+                if (a == null)
+                    return NotFound();
+                a.TenLoai = x.TenLoai;
+                a.MoTa = x.MoTa;
+
+                db.SaveChanges();
+
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult xoals(int id)
+        {
+            try
+            {
+                LoaiSach a = db.LoaiSaches.Find(id);
+
+                if (a == null)
+                    return NotFound();
+
+                db.LoaiSaches.Remove(a);
+                db.SaveChanges();
+
                 return Ok();
             }
             catch (Exception)

@@ -5,134 +5,95 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QLTV_WPF.UI"
         mc:Ignorable="d"
-        Title="QL_LoaiSach" Height="450" Width="800">
-    <Grid Margin="10">
-
+        Title="Quản Lý Loại Sách" Height="500" Width="850"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- ======= TITLE ======= -->
         <TextBlock Text="QUẢN LÝ LOẠI SÁCH"
-               FontSize="24"
-               FontWeight="Bold"
-               Foreground="#2C3E50"
-               HorizontalAlignment="Center"
-               Margin="0,0,0,10"/>
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,15"/>
 
-        <!-- ======= INPUT AREA ======= -->
         <Border Grid.Row="1"
-            Background="White"
-            CornerRadius="8"
-            Padding="15"
-            Margin="0,5"
-            BorderBrush="#D0D7E2"
-            BorderThickness="1">
-
+                Background="#F9FBFF"
+                CornerRadius="8"
+                Padding="15"
+                Margin="0,5"
+                BorderBrush="#D0D7E2"
+                BorderThickness="1">
             <Grid>
-
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="250"/>
-                    <ColumnDefinition Width="150"/>
-                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <!-- Mã loại -->
-                <TextBlock Text="Mã loại:"
-                       VerticalAlignment="Center"
-                       FontWeight="SemiBold"/>
+                <TextBlock Text="Mã loại:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <TextBox x:Name="txtMaLoai" Grid.Column="1" Height="30" Margin="5" 
+                         VerticalContentAlignment="Center" IsReadOnly="True" Background="#F0F0F0"
+                         Text="{Binding SelectedLoaiSach.MaLoai, Mode=OneWay}"/>
 
-                <TextBox x:Name="txtMaLoai"
-                     Grid.Column="1"
-                     Height="28"
-                     Margin="5"/>
+                <TextBlock Text="Tên loại:" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold" Margin="15,5,5,5"/>
+                <TextBox x:Name="txtTenLoai" Grid.Column="3" Height="30" Margin="5" 
+                         VerticalContentAlignment="Center"
+                         Text="{Binding Tenloai, UpdateSourceTrigger=PropertyChanged}"/>
 
-                <!-- Tên loại -->
-                <TextBlock Text="Tên loại:"
-                       Grid.Column="2"
-                       VerticalAlignment="Center"
-                       FontWeight="SemiBold"/>
-
-                <TextBox x:Name="txtTenLoai"
-                     Grid.Column="3"
-                     Height="28"
-                     Margin="5"/>
-
-                <!-- Mô tả -->
-                <TextBlock Text="Mô tả:"
-                       Grid.Row="1"
-                       VerticalAlignment="Center"
-                       FontWeight="SemiBold"/>
-
-                <TextBox x:Name="txtMoTa"
-                     Grid.Row="1"
-                     Grid.Column="1"
-                     Grid.ColumnSpan="3"
-                     Height="28"
-                     Margin="5"/>
-
+                <TextBlock Text="Mô tả:" Grid.Row="1" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <TextBox x:Name="txtMoTa" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Height="30" Margin="5" 
+                         VerticalContentAlignment="Center"
+                         Text="{Binding Mota, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
         </Border>
 
-        <!-- ======= DATAGRID + BUTTON ======= -->
-        <Grid Grid.Row="2" Margin="0,10,0,0">
-
+        <Grid Grid.Row="2" Margin="0,15,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- BUTTON AREA -->
-            <StackPanel Orientation="Horizontal"
-                    HorizontalAlignment="Center"
-                    Margin="0,0,0,10">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
+                <Button Content="➕ Thêm" Width="100" Height="35" Margin="5" 
+                        Background="#27AE60" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdthemls}"/>
 
-                <Button Content="➕ Thêm"
-                    Width="90"
-                    Margin="5"
-                    Background="#27AE60"
-                    Foreground="White"/>
+                <Button Content="✏️ Sửa" Width="100" Height="35" Margin="5" 
+                        Background="#F39C12" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdsuals}"/>
 
-                <Button Content="✏️ Sửa"
-                    Width="90"
-                    Margin="5"
-                    Background="#F39C12"
-                    Foreground="White"/>
+                <Button Content="🗑 Xóa" Width="100" Height="35" Margin="5" 
+                        Background="#E74C3C" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdxoals}"/>
 
-                <Button Content="🗑 Xóa"
-                    Width="90"
-                    Margin="5"
-                    Background="#E74C3C"
-                    Foreground="White"/>
-
-                <Button Content="🔄 Làm mới"
-                    Width="90"
-                    Margin="5"
-                    Background="#3498DB"
-                    Foreground="White"/>
-
+                <Button Content="🔄 Làm mới" Width="100" Height="35" Margin="5" 
+                        Background="#3498DB" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdlammoi}"/>
             </StackPanel>
 
-            <!-- DATAGRID -->
-            <DataGrid x:Name="dgLoaiSach"
-              Grid.Row="1"
-              AutoGenerateColumns="False"
-              CanUserAddRows="False"
-              SelectionMode="Single"
-              IsReadOnly="True"
-              ItemsSource="{Binding ListloaiSach}"
-              SelectionChanged="dgLoaiSach_SelectionChanged">
+            <DataGrid x:Name="dgLoaiSach" 
+                      Grid.Row="1"
+                      AutoGenerateColumns="False" 
+                      CanUserAddRows="False"
+                      SelectionMode="Single" 
+                      IsReadOnly="True"
+                      ItemsSource="{Binding ListloaiSach}"
+                      SelectedItem="{Binding SelectedLoaiSach}"
+                      Background="White"
+                      BorderBrush="#D0D7E2">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Mã loại" Binding="{Binding MaLoai}" Width="100"/>
-                    <DataGridTextColumn Header="Tên loại" Binding="{Binding TenLoai}" Width="200"/>
+                    <DataGridTextColumn Header="Tên loại" Binding="{Binding TenLoai}" Width="250"/>
                     <DataGridTextColumn Header="Mô tả" Binding="{Binding MoTa}" Width="*"/>
                 </DataGrid.Columns>
             </DataGrid>

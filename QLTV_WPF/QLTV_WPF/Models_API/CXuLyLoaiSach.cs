@@ -24,9 +24,42 @@ namespace QLTV_WPF.Models_API
             {
                 return null;
             }
-
             return kq.Result;
+        }
+        public static bool themls(Cloaisach ls)
+        {
+                using (HttpClient hc = new HttpClient())
+                {
+                    var kq = hc.PostAsJsonAsync<Cloaisach>(strurl, ls);
+                    kq.Wait();
 
+                    if (kq.IsCompletedSuccessfully)
+                    {
+                        return kq.Result.IsSuccessStatusCode;
+                    }
+                }
+
+            return false;
+        }
+        public static bool suals(Cloaisach ls)
+        {
+            using (HttpClient hc = new HttpClient())
+            {
+                var kq = hc.PutAsJsonAsync($"{strurl}/{ls.MaLoai}", ls);
+                kq.Wait();
+                return kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode;
+            }
+        }
+
+        // Xóa dữ liệu
+        public static bool xoals(int maLoai)
+        {
+            using (HttpClient hc = new HttpClient())
+            {
+                var kq = hc.DeleteAsync($"{strurl}/{maLoai}");
+                kq.Wait();
+                return kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode;
+            }
         }
     }
 }

@@ -17,9 +17,8 @@ namespace QLTV_API.Models
         public int? SoTrang { get; set; }
         public string? TomTat { get; set; }
         public int? SoLuong { get; set; }
-        public int? MaLoai { get; set; }
         public int? MaNxb { get; set; }
-
+        public int? MaLoai { get; set; }
         public virtual LoaiSach? MaLoaiNavigation { get; set; }
         public virtual NhaXuatBan? MaNxbNavigation { get; set; }
         public virtual ICollection<SachMuon> SachMuons { get; set; }
