@@ -1,0 +1,147 @@
+﻿<Window x:Class="QLTV_WPF.UI.QL_NhaXuatBan"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QLTV_WPF.UI"
+        mc:Ignorable="d"
+        Title="QL_NhaXuatBan" Height="450" Width="800">
+    <Grid Margin="10">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- ======= TITLE ======= -->
+        <TextBlock Text="QUẢN LÝ NHÀ XUẤT BẢN"
+               FontSize="24"
+               FontWeight="Bold"
+               Foreground="#2C3E50"
+               HorizontalAlignment="Center"
+               Margin="0,0,0,10"/>
+
+        <!-- ======= INPUT AREA ======= -->
+        <Border Grid.Row="1"
+            Background="White"
+            CornerRadius="8"
+            Padding="15"
+            Margin="0,5"
+            BorderBrush="#D0D7E2"
+            BorderThickness="1">
+
+            <Grid>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="250"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Mã Nhà Xuất Bản -->
+                <TextBlock Text="Mã  Nhà Xuất Bản:"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"/>
+
+                <TextBox x:Name="txtMaNXB"
+                     Grid.Column="1"
+                     Height="28"
+                     Margin="5"/>
+
+                <!-- Tên Nhà Xuất Bản  -->
+                <TextBlock Text="Tên Nhà Xuất Bản:"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold" Grid.ColumnSpan="2" Margin="245,0,5,0"/>
+
+                <TextBox x:Name="txtTenNXB"
+                     Grid.Column="3"
+                     Height="28"
+                     Margin="5"/>
+
+                <!-- Tiểu sử -->
+                <TextBlock Text="Địa Chỉ:"
+                       Grid.Row="1"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"/>
+                <TextBox x:Name="txtDiaChi"
+                    Grid.Column="1"
+                    Height="28"
+                    Margin="5,2,5,3" Grid.Row="1"/>
+                <TextBlock Text="SDT:"
+                    Grid.Column="2"
+                    VerticalAlignment="Top"
+                    FontWeight="SemiBold" Margin="0,12,0,0" Grid.Row="1"/>
+                <TextBox x:Name="txtSDT"
+                    Grid.Column="3"
+                    Height="28"
+                    Margin="10,6,0,-1" Grid.Row="1"/>
+
+            </Grid>
+        </Border>
+
+        <!-- ======= DATAGRID + BUTTON ======= -->
+        <Grid Grid.Row="2" Margin="0,10,0,0">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <!-- BUTTON AREA -->
+            <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,10">
+
+                <Button Content="➕ Thêm"
+                    Width="90"
+                    Margin="5"
+                    Background="#27AE60"
+                    Foreground="White"/>
+
+                <Button Content="✏️ Sửa"
+                    Width="90"
+                    Margin="5"
+                    Background="#F39C12"
+                    Foreground="White"/>
+
+                <Button Content="🗑 Xóa"
+                    Width="90"
+                    Margin="5"
+                    Background="#E74C3C"
+                    Foreground="White"/>
+
+                <Button Content="🔄 Làm mới"
+                    Width="90"
+                    Margin="5"
+                    Background="#3498DB"
+                    Foreground="White"/>
+
+            </StackPanel>
+
+            <!-- DATAGRID -->
+            <DataGrid x:Name="dgNhaXuatBan"
+              Grid.Row="1"
+              AutoGenerateColumns="False"
+              CanUserAddRows="False"
+              SelectionMode="Single"
+              IsReadOnly="True"
+              ItemsSource="{Binding ListNhaXuatBan}"
+              SelectionChanged="dgNhaXuatBan_SelectionChanged">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Mã Nhà Xuất Bản" Binding="{Binding MaNXB}" Width="100"/>
+                    <DataGridTextColumn Header="Tên Nhà Xuất Bản" Binding="{Binding TenNXB}" Width="200"/>
+                    <DataGridTextColumn Header="Địa Chỉ" Binding="{Binding DiaChi}" Width="200"/>
+                    <DataGridTextColumn Header="Số Điện Thoại" Binding="{Binding SDT}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>
