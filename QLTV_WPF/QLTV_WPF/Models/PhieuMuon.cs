@@ -17,7 +17,7 @@ namespace QLTV_WPF.Models
         public DateTime? NgayTra { get; set; }
         public string? GhiChu { get; set; }
 
-        public virtual DocGium? MaDocGiaNavigation { get; set; }
+        public virtual DocGia? MaDocGiaNavigation { get; set; }
         public virtual NhanVien? MaNhanVienNavigation { get; set; }
         public virtual ICollection<ChiTietMuon> ChiTietMuons { get; set; }
     }

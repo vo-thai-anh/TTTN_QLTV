@@ -17,7 +17,7 @@ namespace QLTV_API.Models
         }
 
         public virtual DbSet<ChiTietMuon> ChiTietMuons { get; set; } = null!;
-        public virtual DbSet<DocGium> DocGia { get; set; } = null!;
+        public virtual DbSet<DocGia> DocGia { get; set; } = null!;
         public virtual DbSet<LoaiSach> LoaiSaches { get; set; } = null!;
         public virtual DbSet<NhaXuatBan> NhaXuatBans { get; set; } = null!;
         public virtual DbSet<NhanVien> NhanViens { get; set; } = null!;
@@ -25,7 +25,7 @@ namespace QLTV_API.Models
         public virtual DbSet<PhieuTra> PhieuTras { get; set; } = null!;
         public virtual DbSet<Sach> Saches { get; set; } = null!;
         public virtual DbSet<SachMuon> SachMuons { get; set; } = null!;
-        public virtual DbSet<TacGium> TacGia { get; set; } = null!;
+        public virtual DbSet<TacGia> TacGia { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -71,7 +71,7 @@ namespace QLTV_API.Models
                     .HasConstraintName("FK__ChiTietMu__MaSac__52593CB8");
             });
 
-            modelBuilder.Entity<DocGium>(entity =>
+            modelBuilder.Entity<DocGia>(entity =>
             {
                 entity.HasKey(e => e.MaDocGia)
                     .HasName("PK__DocGia__F165F945F812173C");
@@ -229,7 +229,7 @@ namespace QLTV_API.Models
                     .WithMany(p => p.MaSaches)
                     .UsingEntity<Dictionary<string, object>>(
                         "SachTacGium",
-                        l => l.HasOne<TacGium>().WithMany().HasForeignKey("MaTg").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__Sach_TacGi__MaTG__571DF1D5"),
+                        l => l.HasOne<TacGia>().WithMany().HasForeignKey("MaTg").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__Sach_TacGi__MaTG__571DF1D5"),
                         r => r.HasOne<Sach>().WithMany().HasForeignKey("MaSach").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__Sach_TacG__MaSac__5629CD9C"),
                         j =>
                         {
@@ -256,7 +256,7 @@ namespace QLTV_API.Models
                     .HasConstraintName("FK__SachMuon__MaSach__45F365D3");
             });
 
-            modelBuilder.Entity<TacGium>(entity =>
+            modelBuilder.Entity<TacGia>(entity =>
             {
                 entity.HasKey(e => e.MaTg)
                     .HasName("PK__TacGia__27250074E9A0C9AC");

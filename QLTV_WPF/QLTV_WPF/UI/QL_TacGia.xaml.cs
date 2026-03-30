@@ -1,4 +1,5 @@
-﻿using QLTV_WPF.Models;
+﻿using QLTV_API.Models;
+using QLTV_WPF.Models;
 using QLTV_WPF.Models_API;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace QLTV_WPF.UI
 
         private void dgTacGia_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if (dgTacGia.SelectedItem is TacGium selected)
+            if (dgTacGia.SelectedItem is TacGia selected)
             {
                 txtMaTg.Text = selected.MaTg.ToString();
                 txtTenTg.Text = selected.TenTg;

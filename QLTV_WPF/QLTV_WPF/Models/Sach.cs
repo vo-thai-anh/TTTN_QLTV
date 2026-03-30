@@ -8,7 +8,7 @@ namespace QLTV_WPF.Models
         public Sach()
         {
             SachMuons = new HashSet<SachMuon>();
-            MaTgs = new HashSet<TacGium>();
+            MaTgs = new HashSet<TacGia>();
         }
 
         public int MaSach { get; set; }
@@ -24,6 +24,6 @@ namespace QLTV_WPF.Models
         public virtual NhaXuatBan? MaNxbNavigation { get; set; }
         public virtual ICollection<SachMuon> SachMuons { get; set; }
 
-        public virtual ICollection<TacGium> MaTgs { get; set; }
+        public virtual ICollection<TacGia> MaTgs { get; set; }
     }
 }

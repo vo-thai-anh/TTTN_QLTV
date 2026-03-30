@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace QLTV_API.Models
 {
-    public partial class TacGium
+    public partial class TacGia
     {
-        public TacGium()
+        public TacGia()
         {
             MaSaches = new HashSet<Sach>();
         }
