@@ -1,0 +1,140 @@
+﻿<Window x:Class="QLTV_WPF.UI.QL_PhieuMuon"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QLTV_WPF.UI"
+        mc:Ignorable="d"
+        Title="Quản Lý Phiếu Mượn" Height="600" Width="950"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- TIÊU ĐỀ -->
+        <TextBlock Text="QUẢN LÝ PHIẾU MƯỢN"
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,15"/>
+
+        <!-- FORM THÔNG TIN -->
+        <Border Grid.Row="1"
+                Background="#F9FBFF"
+                CornerRadius="8"
+                Padding="15"
+                Margin="0,5"
+                BorderBrush="#D0D7E2"
+                BorderThickness="1">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="150"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Mã phiếu mượn -->
+                <TextBlock Text="Mã phiếu mượn:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <TextBox x:Name="txtMaPM" Grid.Column="1" Height="30" Margin="5"
+                         VerticalContentAlignment="Center" 
+                         IsReadOnly="True" Background="#F0F0F0"
+                         Text="{Binding SelectedPhieuMuon.MaPhieuMuon, Mode=OneWay}"/>
+
+                <!-- Độc giả -->
+                <TextBlock Text="Độc giả:" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <ComboBox x:Name="cbDocGia" Grid.Column="3" Height="30" Margin="5"
+                          ItemsSource="{Binding ListDocGia}" 
+                          DisplayMemberPath="HoTen"
+                          SelectedValuePath="MaDocGia"
+                          SelectedValue="{Binding MaDocGia}"/>
+
+                <!-- Nhân viên -->
+                <TextBlock Text="Nhân viên:" Grid.Row="1" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <ComboBox x:Name="cbNhanVien" Grid.Row="1" Grid.Column="1" Height="30" Margin="5"
+                          ItemsSource="{Binding ListNhanVien}"
+                          DisplayMemberPath="TenNhanVien"
+                          SelectedValuePath="MaNhanVien"
+                          SelectedValue="{Binding MaNhanVien}"/>
+
+                <!-- Ngày mượn -->
+                <TextBlock Text="Ngày mượn:" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <DatePicker Grid.Row="1" Grid.Column="3" Margin="5"
+                            SelectedDate="{Binding NgayMuon}"/>
+
+                <!-- Ngày trả -->
+                <TextBlock Text="Ngày trả:" Grid.Row="2" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <DatePicker Grid.Row="2" Grid.Column="1" Margin="5"
+                            SelectedDate="{Binding NgayTra}"/>
+
+                <!-- Ghi chú -->
+                <TextBlock Text="Ghi chú:" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <TextBox Grid.Row="2" Grid.Column="3" Height="30" Margin="5"
+                         VerticalContentAlignment="Center"
+                         Text="{Binding GhiChu, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+        </Border>
+
+        <!-- KHU VỰC BUTTON + DATAGRID -->
+        <Grid Grid.Row="2" Margin="0,15,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- BUTTONS -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,15">
+                <Button Content="➕ Thêm" Width="120" Height="35" Margin="5" 
+                        Background="#27AE60" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdThemPM}"/>
+
+                <Button Content="✏️ Sửa" Width="120" Height="35" Margin="5" 
+                        Background="#F39C12" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdSuaPM}"/>
+
+                <Button Content="🗑 Xóa" Width="120" Height="35" Margin="5" 
+                        Background="#E74C3C" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdXoaPM}"/>
+
+                <Button Content="🔄 Làm mới" Width="120" Height="35" Margin="5" 
+                        Background="#3498DB" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdLamMoi}"/>
+            </StackPanel>
+
+            <!-- DATAGRID -->
+            <DataGrid x:Name="dgPhieuMuon"
+                      Grid.Row="1"
+                      AutoGenerateColumns="False"
+                      CanUserAddRows="False"
+                      IsReadOnly="True"
+                      SelectionMode="Single"
+                      ItemsSource="{Binding ListPhieuMuon}"
+                      SelectedItem="{Binding SelectedPhieuMuon}"
+                      Background="White"
+                      BorderBrush="#D0D7E2">
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Mã phiếu" Binding="{Binding MaPhieuMuon}" Width="100"/>
+                    <DataGridTextColumn Header="Độc giả" Binding="{Binding MaDocGiaNavigation.HoTen}" Width="200"/>
+                    <DataGridTextColumn Header="Nhân viên" Binding="{Binding MaNhanVienNavigation.TenNhanVien}" Width="200"/>
+                    <DataGridTextColumn Header="Ngày mượn" Binding="{Binding NgayMuon, StringFormat=\{0:dd/MM/yyyy\}}" Width="120"/>
+                    <DataGridTextColumn Header="Ngày trả" Binding="{Binding NgayTra, StringFormat=\{0:dd/MM/yyyy\}}" Width="120"/>
+                    <DataGridTextColumn Header="Ghi chú" Binding="{Binding GhiChu}" Width="*"/>
+                </DataGrid.Columns>
+
+            </DataGrid>
+        </Grid>
+
+    </Grid>
+</Window>
