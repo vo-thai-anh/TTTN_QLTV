@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace QLTV_API.Models
 {
@@ -18,8 +19,9 @@ namespace QLTV_API.Models
         public string? MatKhau { get; set; }
         public string? Email { get; set; }
         public string? Sdt { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<PhieuMuon> PhieuMuons { get; set; }
+        [JsonIgnore]
         public virtual ICollection<PhieuTra> PhieuTras { get; set; }
     }
 }

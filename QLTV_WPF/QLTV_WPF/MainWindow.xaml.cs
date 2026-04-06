@@ -25,5 +25,17 @@ namespace QLTV_WPF
             UI.QL_LoaiSach f = new UI.QL_LoaiSach();
             f.Show();
         }
+
+        private void QLDocGia_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_DocGia f = new UI.QL_DocGia();
+            f.Show();
+        }
+
+        private void QLNhanVien_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_NhanVien f = new UI.QL_NhanVien();
+            f.Show();
+        }
     }
 }
