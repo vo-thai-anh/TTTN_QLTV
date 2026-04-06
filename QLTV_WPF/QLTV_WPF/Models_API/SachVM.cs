@@ -9,11 +9,16 @@ namespace QLTV_WPF.Models_API
     {
         public SachVM()
         {
+            //Lấy danh sách Sách từ API
             ListSach = CXuLySach.getdssach();
+            //Lấy danh sách Loại sách từ API
+            ListLoaiSach = CXuLyLoaiSach.getdsls();
+
             cmdthemsach = new RelayCommand(ThemSach_Execute, ThemSach_CanExecute);
             cmdsuasach = new RelayCommand(SuaSach_Execute, SuaSach_CanExecute);
             cmdxoasach = new RelayCommand(XoaSach_Execute, XoaSach_CanExecute);
             cmdlammoi = new RelayCommand(p => LamMoi());
+            cmdMoKhoSach = new RelayCommand(MoKhoSach_Execute, MoKhoSach_CanExecute);
         }
 
         // Khai báo Commands
@@ -21,6 +26,7 @@ namespace QLTV_WPF.Models_API
         public RelayCommand cmdsuasach { get; set; }
         public RelayCommand cmdxoasach { get; set; }
         public RelayCommand cmdlammoi { get; set; }
+        public RelayCommand cmdMoKhoSach { get; set; }
 
         // Danh sách sách hiển thị lên DataGrid
         private List<Sach> m_listSach;
@@ -33,7 +39,13 @@ namespace QLTV_WPF.Models_API
                 NotifyPropertyChanged("ListSach");
             }
         }
-
+        private List<LoaiSach> m_listLoaiSach;
+        // Danh sách loại sách hiển thị lên comboBox Loại sách
+        public List<LoaiSach> ListLoaiSach
+        {
+            get { return m_listLoaiSach; }
+            set { m_listLoaiSach = value; NotifyPropertyChanged("ListLoaiSach"); }
+        }
         // Các thuộc tính Binding lên TextBox
         private string m_tensach;
         public string Tensach
@@ -212,5 +224,17 @@ namespace QLTV_WPF.Models_API
             Manxb = null;
             SelectedSach = null;
         }
+        public void MoKhoSach_Execute(object parameter)
+        {
+            // Khởi tạo cửa sổ Sách Mượn và truyền vào Mã sách đang chọn trên DataGrid
+            UI.QL_SachMuon windowSachMuon = new UI.QL_SachMuon(SelectedSach.MaSach);
+            windowSachMuon.ShowDialog(); // Mở lên dưới dạng cửa sổ con (Popup)
+        }
+        public bool MoKhoSach_CanExecute(object parameter)
+        {
+            // Chỉ cho phép bấm nút này khi người dùng ĐÃ CHỌN một dòng sách trên DataGrid
+            return SelectedSach != null;
+        }
+
     }
 }

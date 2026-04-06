@@ -13,6 +13,7 @@ namespace QLTV_WPF.Models
         public int MaSachMuon { get; set; }
         public int? MaSach { get; set; }
         public string? TinhTrang { get; set; }
+        public int? TrangThai { get; set; }
 
         public virtual Sach? MaSachNavigation { get; set; }
         public virtual ICollection<ChiTietMuon> ChiTietMuons { get; set; }

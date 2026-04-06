@@ -1,7 +1,7 @@
 ﻿<Window x:Class="QLTV_WPF.UI.QL_SachMuon"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Chi Tiết Sách Mượn" Height="500" Width="700" WindowStartupLocation="CenterScreen">
+        Title="Quản Lý Kho Sách (Sách Mượn)" Height="500" Width="750" WindowStartupLocation="CenterScreen">
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -10,78 +10,51 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="CHI TIẾT SÁCH" 
-                   FontSize="22" 
-                   FontWeight="Bold" 
-                   Foreground="#2C3E50" 
-                   HorizontalAlignment="Center" 
-                   Margin="0,0,0,10"/>
+        <TextBlock Text="QUẢN LÝ CUỐN SÁCH VẬT LÝ" FontSize="22" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Center" Margin="0,0,0,15"/>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="5" Padding="15" BorderBrush="#BDC3C7" BorderThickness="1">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Chọn đầu sách:" 
-                           VerticalAlignment="Center" 
-                           FontWeight="Bold" 
-                           Margin="0,0,10,0"/>
-                <ComboBox x:Name="cbChonSach" 
-                          Width="250" 
-                          Height="30" 
-                          Margin="0,0,20,0"
-                          DisplayMemberPath="TenSach" 
-                          SelectedValuePath="MaSach"/>
+        <Border Grid.Row="1" Background="#FDFEFE" CornerRadius="8" Padding="15" BorderBrush="#D0D7E2" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock Text="Tình trạng:" 
-                           VerticalAlignment="Center" 
-                           FontWeight="Bold" 
-                           Margin="0,0,10,0"/>
-                <TextBox x:Name="txtTinhTrang" 
-                         Width="200" 
-                         Height="30"/>
-            </StackPanel>
+                <TextBlock Text="Đầu sách:" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                <ComboBox Grid.Column="1" Height="30" Margin="5"
+                          ItemsSource="{Binding ListSach}" DisplayMemberPath="TenSach" SelectedValuePath="MaSach"
+                          SelectedValue="{Binding Masach, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <TextBlock Text="Trạng thái:" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold" Margin="15,0,0,0"/>
+                <ComboBox Grid.Column="3" Height="30" Margin="5"
+                          ItemsSource="{Binding ListTrangThai}" DisplayMemberPath="TenTT" SelectedValuePath="MaTT"
+                          SelectedValue="{Binding Trangthai, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <TextBlock Text="Tình trạng vật lý:" Grid.Row="1" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,15,0,0"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Height="30" Margin="5,20,5,5" VerticalContentAlignment="Center"
+                         Text="{Binding Tinhtrang, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
         </Border>
 
-        <StackPanel Grid.Row="2" 
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Right" 
-                    Margin="0,15">
-            <Button Content="➕ Nhập bản sao" 
-                    Width="130" Height="32" 
-                    Margin="5" Background="#2ECC71" 
-                    Foreground="White"/>
-            <Button Content="🗑 Hủy bản" 
-                    Width="100" 
-                    Height="32" 
-                    Margin="5" 
-                    Background="#E74C3C" 
-                    Foreground="White"/>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15">
+            <Button Content="➕ Thêm" Width="90" Height="35" Margin="5" Background="#27AE60" Foreground="White" FontWeight="Bold" Command="{Binding cmdthemsachmuon}"/>
+            <Button Content="✏️ Sửa" Width="90" Height="35" Margin="5" Background="#F39C12" Foreground="White" FontWeight="Bold" Command="{Binding cmdsuasachmuon}"/>
+            <Button Content="🗑 Xóa" Width="90" Height="35" Margin="5" Background="#E74C3C" Foreground="White" FontWeight="Bold" Command="{Binding cmdxoasachmuon}"/>
+            <Button Content="🔄 Làm mới" Width="90" Height="35" Margin="5" Background="#3498DB" Foreground="White" FontWeight="Bold" Command="{Binding cmdlammoi}"/>
         </StackPanel>
 
-        <DataGrid x:Name="dgSachMuon" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" SelectionChanged="dgSachMuon_SelectionChanged">
+        <DataGrid x:Name="dgSachMuon" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
+                  ItemsSource="{Binding ListSachMuon}" SelectedItem="{Binding SelectedSachMuon}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="ID Bản Sao" Binding="{Binding MaSachMuon}" Width="80"/>
-                <DataGridTextColumn Header="Tên Sách" Binding="{Binding TenSach}" Width="*"/>
-                <DataGridTextColumn Header="Tình Trạng" Binding="{Binding TinhTrang}" Width="150"/>
-
-                <DataGridTemplateColumn Header="Thao tác" Width="120">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="🎫 Mượn sách" 
-                            Padding="5,2"
-                            Background="#3498DB" 
-                            Foreground="White"
-                            FontWeight="SemiBold"
-                            Cursor="Hand"
-                            Click="btnMuonSach_Click"
-                            Tag="{Binding MaSachMuon}">
-                                <Button.Resources>
-                                    <Style TargetType="Border">
-                                        <Setter Property="CornerRadius" Value="3"/>
-                                    </Style>
-                                </Button.Resources>
-                            </Button>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Mã Vạch" Binding="{Binding MaSachMuon}" Width="80"/>
+                <DataGridTextColumn Header="Mã Đầu Sách" Binding="{Binding MaSach}" Width="100"/>
+                <DataGridTextColumn Header="Trạng thái mượn" Binding="{Binding TenTrangThai}" Width="120" FontWeight="Bold"/>
+                <DataGridTextColumn Header="Tình trạng vật lý" Binding="{Binding TinhTrang}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

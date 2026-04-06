@@ -42,5 +42,10 @@ namespace QLTV_WPF
             UI.QL_Sach f = new UI.QL_Sach();
             f.Show();
         }
+        private void MenuItem_ClickSachMuon(object sender, RoutedEventArgs e)
+        {
+            UI.QL_SachMuon f = new UI.QL_SachMuon();
+            f.Show();
+        }
     }
 }

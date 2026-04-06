@@ -16,5 +16,7 @@ namespace QLTV_WPF.Models
         public int? SoLuong { get; set; }
         public int? MaLoai { get; set; }
         public int? MaNxb { get; set; }
+
+        public string? TenLoai { get; set; }
     }
 }
