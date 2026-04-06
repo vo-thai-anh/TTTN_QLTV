@@ -37,5 +37,10 @@ namespace QLTV_WPF
             UI.QL_NhanVien f = new UI.QL_NhanVien();
             f.Show();
         }
+        private void MenuItem_ClickSach(object sender, RoutedEventArgs e)
+        {
+            UI.QL_Sach f = new UI.QL_Sach();
+            f.Show();
+        }
     }
 }

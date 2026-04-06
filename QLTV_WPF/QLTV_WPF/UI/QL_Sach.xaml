@@ -29,45 +29,57 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="Tên sách:" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox x:Name="txtTenSach" Grid.Column="1" Height="30" Margin="5"/>
+                <TextBox x:Name="txtTenSach" Grid.Column="1" Height="30" Margin="5"
+                         Text="{Binding Tensach, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Text="Năm XB:" Grid.Row="1" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox x:Name="txtNamXB" Grid.Row="1" Grid.Column="1" Height="30" Margin="5"/>
+                <TextBox x:Name="txtNamXB" Grid.Row="1" Grid.Column="1" Height="30" Margin="5"
+                         Text="{Binding Namxb, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Text="Loại sách:" Grid.Row="2" VerticalAlignment="Center" Margin="0,5"/>
                 <ComboBox x:Name="cbLoaiSach" Grid.Row="2" Grid.Column="1" Height="30" Margin="5" 
-                          DisplayMemberPath="TenLoai" SelectedValuePath="MaLoai"/>
+                          DisplayMemberPath="TenLoai" SelectedValuePath="MaLoai"
+                          SelectedValue="{Binding Maloai, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Text="Số lượng:" Grid.Column="3" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox x:Name="txtSoLuong" Grid.Column="4" Height="30" Margin="5"/>
+                <TextBox x:Name="txtSoLuong" Grid.Column="4" Height="30" Margin="5"
+                         Text="{Binding Soluong, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Text="Số trang:" Grid.Row="1" Grid.Column="3" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox x:Name="txtSoTrang" Grid.Row="1" Grid.Column="4" Height="30" Margin="5"/>
+                <TextBox x:Name="txtSoTrang" Grid.Row="1" Grid.Column="4" Height="30" Margin="5"
+                         Text="{Binding Sotrang, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Text="Nhà XB:" Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" Margin="0,5"/>
                 <ComboBox x:Name="cbNXB" Grid.Row="2" Grid.Column="4" Height="30" Margin="5"
-                          DisplayMemberPath="TenNXB" SelectedValuePath="MaNXB"/>
+                          DisplayMemberPath="TenNXB" SelectedValuePath="MaNXB"
+                          SelectedValue="{Binding Manxb, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Text="Tóm tắt:" Grid.Row="3" VerticalAlignment="Top" Margin="0,10"/>
                 <TextBox x:Name="txtTomTat" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Height="60" Margin="5" 
-                         TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+                         TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
+                         Text="{Binding Tomtat, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
         </Border>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15">
-            <Button Content="➕ Thêm" Width="100" Height="35" Margin="8" Background="#27AE60" Foreground="White" FontWeight="Bold"/>
-            <Button Content="✏️ Sửa" Width="100" Height="35" Margin="8" Background="#F39C12" Foreground="White" FontWeight="Bold"/>
-            <Button Content="🗑 Xóa" Width="100" Height="35" Margin="8" Background="#E74C3C" Foreground="White" FontWeight="Bold"/>
-            <Button Content="🔄 Làm mới" Width="100" Height="35" Margin="8" Background="#3498DB" Foreground="White" FontWeight="Bold"/>
+            <Button Content="➕ Thêm" Width="100" Height="35" Margin="8" Background="#27AE60" Foreground="White" FontWeight="Bold"
+                    Command="{Binding cmdthemsach}"/>
+            <Button Content="✏️ Sửa" Width="100" Height="35" Margin="8" Background="#F39C12" Foreground="White" FontWeight="Bold"
+                    Command="{Binding cmdsuasach}"/>
+            <Button Content="🗑 Xóa" Width="100" Height="35" Margin="8" Background="#E74C3C" Foreground="White" FontWeight="Bold"
+                    Command="{Binding cmdxoasach}"/>
+            <Button Content="🔄 Làm mới" Width="100" Height="35" Margin="8" Background="#3498DB" Foreground="White" FontWeight="Bold"
+                    Command="{Binding cmdlammoi}"/>
         </StackPanel>
 
-        <DataGrid x:Name="dgSach" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" ItemsSource="{Binding ListSach}">
+        <DataGrid x:Name="dgSach" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
+                  ItemsSource="{Binding ListSach}" SelectedItem="{Binding SelectedSach}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Mã" Binding="{Binding MaSach}" Width="50"/>
                 <DataGridTextColumn Header="Tên Sách" Binding="{Binding TenSach}" Width="200"/>
                 <DataGridTextColumn Header="Số lượng" Binding="{Binding SoLuong}" Width="80"/>
-                <DataGridTextColumn Header="Loại" Binding="{Binding TenLoai}" Width="120"/>
-                <DataGridTextColumn Header="NXB" Binding="{Binding TenNXB}" Width="120"/>
+                <DataGridTextColumn Header="Mã Loại" Binding="{Binding MaLoai}" Width="80"/>
+                <DataGridTextColumn Header="Mã NXB" Binding="{Binding MaNxb}" Width="80"/>
                 <DataGridTextColumn Header="Tóm tắt" Binding="{Binding TomTat}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>

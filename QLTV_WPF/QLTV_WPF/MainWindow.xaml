@@ -9,6 +9,8 @@
     <StackPanel>
         <Menu VerticalAlignment="Top">
             <MenuItem Header="Quản lý Loại Sách " Click="MenuItem_Click"/>
+            <MenuItem Header="Quản lý Sách " Click="MenuItem_ClickSach"/>
+
             <MenuItem Header="Quản lý Đôc Giả " Click="QLDocGia_Click"/>
             <MenuItem Header="Quản lý Nhân Viên " Click="QLNhanVien_Click"/>
 
