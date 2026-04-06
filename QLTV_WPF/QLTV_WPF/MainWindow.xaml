@@ -9,6 +9,7 @@
     <StackPanel>
         <Menu VerticalAlignment="Top">
             <MenuItem Header="Quản lý Loại Sách " Click="MenuItem_Click"/>
+            <MenuItem Header="Quản lý Sách " Click="MenuItem_ClickSach"/>
         </Menu>
     </StackPanel>
 </Window>
