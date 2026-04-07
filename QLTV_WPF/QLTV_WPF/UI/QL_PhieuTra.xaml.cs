@@ -22,6 +22,7 @@ namespace QLTV_WPF.UI
         public QL_PhieuTra()
         {
             InitializeComponent();
+            this.DataContext = new QLTV_WPF.ViewModels.PhieuTraVM();
         }
     }
 }
