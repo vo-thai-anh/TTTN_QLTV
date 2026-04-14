@@ -80,7 +80,6 @@
                 <DataGridTextColumn Header="Mã" Binding="{Binding MaSach}" Width="50"/>
                 <DataGridTextColumn Header="Tên Sách" Binding="{Binding TenSach}" Width="200"/>
                 <DataGridTextColumn Header="Số lượng" Binding="{Binding SoLuong}" Width="80"/>
-                <DataGridTextColumn Header="Mã Loại" Binding="{Binding MaLoai}" Width="80"/>
                 <DataGridTextColumn Header="Loại Sách" Binding="{Binding TenLoai}" Width="120"/>
                 <DataGridTextColumn Header="Mã NXB" Binding="{Binding MaNxb}" Width="80"/>
                 <DataGridTextColumn Header="Tóm tắt" Binding="{Binding TomTat}" Width="*"/>
