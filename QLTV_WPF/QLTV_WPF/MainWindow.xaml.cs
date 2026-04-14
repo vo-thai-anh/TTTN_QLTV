@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -55,6 +55,24 @@ namespace QLTV_WPF
         private void QLNhaXuatBan_Click(object sender, RoutedEventArgs e)
         {
             UI.QL_NhaXuatBan f = new UI.QL_NhaXuatBan();
+            f.Show();
+        }
+
+        private void QLPhieuMuon_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_PhieuMuon f = new UI.QL_PhieuMuon();
+            f.Show();
+        }
+
+        private void QLPhieuTra_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_PhieuTra f = new UI.QL_PhieuTra();
+            f.Show();
+        }
+
+        private void QLChiTietMuon_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_ChiTietMuon f = new UI.QL_ChiTietMuon();
             f.Show();
         }
     }

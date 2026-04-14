@@ -1,4 +1,4 @@
-﻿<Window x:Class="QLTV_WPF.MainWindow"
+<Window x:Class="QLTV_WPF.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -15,7 +15,9 @@
             <MenuItem Header="Quản lý NXB " Click="QLNhaXuatBan_Click"/>
             <MenuItem Header="Quản lý Đôc Giả " Click="QLDocGia_Click"/>
             <MenuItem Header="Quản lý Nhân Viên " Click="QLNhanVien_Click"/>
-
+            <MenuItem Header="Quản lý Phiếu Mượn " Click="QLPhieuMuon_Click"/>
+            <MenuItem Header="Quản lý Phiếu Trả " Click="QLPhieuTra_Click"/>
+            <MenuItem Header="Quản lý C.Tiết Mượn " Click="QLChiTietMuon_Click"/>
 
         </Menu>
     </StackPanel>
