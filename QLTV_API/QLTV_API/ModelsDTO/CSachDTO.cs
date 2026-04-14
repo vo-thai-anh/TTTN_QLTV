@@ -10,6 +10,6 @@
         public int? SoLuong { get; set; }
         public int? MaLoai { get; set; }
         public int? MaNxb { get; set; }
-        public string? TenLoai { get; set; }
+        public List<int>? MaTGIds { get; set; }
     }
 }

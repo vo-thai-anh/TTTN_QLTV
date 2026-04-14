@@ -60,8 +60,18 @@ namespace QLTV_API.Controllers
                     MaNxb = s.MaNxb
                 };
 
+                //Nếu có danh sách tác giả gửi kèm thì thêm luôn vào sách
+                if (s.MaTGIds != null && s.MaTGIds.Count > 0)
+                {
+                    var tacGias = db.TacGia.Where(tg => s.MaTGIds.Contains(tg.MaTg)).ToList();
+                    foreach (var tg in tacGias)
+                    {
+                        a.MaTgs.Add(tg);
+                    }
+                }
+
                 db.Saches.Add(a);
-                db.SaveChanges();
+                db.SaveChanges(); 
 
                 return Ok(a);
             }

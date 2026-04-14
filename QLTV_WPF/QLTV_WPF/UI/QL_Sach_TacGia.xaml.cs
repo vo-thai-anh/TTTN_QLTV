@@ -8,22 +8,32 @@ namespace QLTV_WPF.UI
 {
     public partial class QL_Sach_TacGia : Window
     {
-        private int _maSach;
+        private int? _maSach;
         public List<CTacGiaChon> ListTacGiaChon { get; set; }
 
-        public QL_Sach_TacGia(int maSach, string tenSach)
+        // Khai báo biến để trả về danh sách đã chọn
+        public List<int> SelectedIds { get; set; }
+
+        // Hàm khởi tạo mới: Thêm tham số dsTam cho trường hợp thêm sách mới
+        public QL_Sach_TacGia(int? maSach, string tenSach, List<int> dsTam = null)
         {
             InitializeComponent();
             _maSach = maSach;
-            lblTenSach.Text = $"Sách: {tenSach}";
+            lblTenSach.Text = $"Sách: {tenSach ?? "Sách mới chưa lưu"}";
 
-            // 1. Lấy tất cả tác giả có trong hệ thống
             var tatCaTG = CXuLyTacGia.getdstg();
+            List<int> idsDaChon = new List<int>();
 
-            // 2. Lấy danh sách ID các tác giả đã viết cuốn sách này
-            var idsDaChon = CXuLySachTacGia.getMaTGCuaSach(maSach);
+            // Lấy dữ liệu: Từ DB nếu đang sửa sách, hoặc từ dsTam nếu đang thêm mới
+            if (maSach.HasValue)
+            {
+                idsDaChon = CXuLySachTacGia.getMaTGCuaSach(maSach.Value);
+            }
+            else if (dsTam != null)
+            {
+                idsDaChon = dsTam;
+            }
 
-            // 3. Trộn dữ liệu: Ai đã viết thì IsSelected = true
             ListTacGiaChon = tatCaTG.Select(x => new CTacGiaChon
             {
                 MaTg = x.MaTg,
@@ -36,14 +46,18 @@ namespace QLTV_WPF.UI
 
         private void btnLuu_Click(object sender, RoutedEventArgs e)
         {
-            // Lọc ra những ông được tích chọn
-            var idsMoi = ListTacGiaChon.Where(x => x.IsSelected).Select(x => x.MaTg).ToList();
+            // Lấy danh sách ID các tác giả được tick
+            SelectedIds = ListTacGiaChon.Where(x => x.IsSelected).Select(x => x.MaTg).ToList();
 
-            if (CXuLySachTacGia.capNhatTacGia(_maSach, idsMoi))
+            // Nếu là sách đã có trong DB thì gọi API lưu luôn
+            if (_maSach.HasValue)
             {
+                CXuLySachTacGia.capNhatTacGia(_maSach.Value, SelectedIds);
                 MessageBox.Show("Cập nhật tác giả thành công!");
-                this.Close();
             }
+
+            // Đóng cửa sổ và báo là thao tác thành công
+            this.DialogResult = true;
         }
 
         private void btnDong_Click(object sender, RoutedEventArgs e) => this.Close();

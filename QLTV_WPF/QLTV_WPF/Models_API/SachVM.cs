@@ -23,9 +23,23 @@ namespace QLTV_WPF.Models_API
             cmdMoKhoSach = new RelayCommand(MoKhoSach_Execute, MoKhoSach_CanExecute);
 
             cmdQuanLyTacGia = new RelayCommand(p => {
-                var popup = new UI.QL_Sach_TacGia(SelectedSach.MaSach, SelectedSach.TenSach);
-                popup.ShowDialog();
-            }, p => SelectedSach != null);
+                if (SelectedSach != null)
+                {
+                    // Chế độ 1: Đang chọn sách cũ để sửa
+                    var popup = new UI.QL_Sach_TacGia(SelectedSach.MaSach, SelectedSach.TenSach);
+                    popup.ShowDialog();
+                    ListSach = CXuLySach.getdssach(); // Cập nhật lại UI bảng chính
+                }
+                else
+                {
+                    // Chế độ 2: Đang nhập sách mới
+                    var popup = new UI.QL_Sach_TacGia(null, Tensach, m_dsTacGiaTam);
+                    if (popup.ShowDialog() == true)
+                    {
+                        m_dsTacGiaTam = popup.SelectedIds; // Cất danh sách vừa chọn vào biến tạm
+                    }
+                }
+            }, p => true); // ĐỔI THÀNH TRUE ĐỂ NÚT Tác giả LUÔN SÁNG
 
         }
 
@@ -48,6 +62,10 @@ namespace QLTV_WPF.Models_API
                 NotifyPropertyChanged("ListSach");
             }
         }
+        // Biến tạm để lưu danh sách mã tác giả khi thêm mới sách (chưa có mã sách để lấy từ DB)
+        private List<int> m_dsTacGiaTam = new List<int>();
+
+
         private List<LoaiSach> m_listLoaiSach;
         // Danh sách loại sách hiển thị lên comboBox Loại sách
         public List<LoaiSach> ListLoaiSach
@@ -144,7 +162,9 @@ namespace QLTV_WPF.Models_API
                 TomTat = this.Tomtat,
                 SoLuong = this.Soluong,
                 MaLoai = this.Maloai,
-                MaNxb = this.Manxb
+                MaNxb = this.Manxb,
+
+                MaTGIds = m_dsTacGiaTam
             };
 
             bool thanhCong = CXuLySach.themsach(moi);
@@ -153,6 +173,8 @@ namespace QLTV_WPF.Models_API
             {
                 ListSach = CXuLySach.getdssach();
                 LamMoi();
+                // Reset mảng tạm về rỗng để chuẩn bị cho lần thêm sách tiếp theo
+                m_dsTacGiaTam.Clear();
                 System.Windows.MessageBox.Show("Thêm sách thành công!");
             }
             else
