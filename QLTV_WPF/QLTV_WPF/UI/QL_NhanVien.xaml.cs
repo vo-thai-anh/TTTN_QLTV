@@ -22,6 +22,7 @@ namespace QLTV_WPF.UI
         public QL_NhanVien()
         {
             InitializeComponent();
+            this.DataContext = new QLTV_WPF.ViewModels.NhanVienVM();
         }
     }
 }

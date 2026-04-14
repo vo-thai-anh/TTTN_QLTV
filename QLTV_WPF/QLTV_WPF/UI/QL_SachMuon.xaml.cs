@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QLTV_WPF.Models_API;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,17 +20,12 @@ namespace QLTV_WPF.UI
     /// </summary>
     public partial class QL_SachMuon : Window
     {
-        public QL_SachMuon()
+        public QL_SachMuon(int? maSachTruyenSang = null)
         {
             InitializeComponent();
+            DataContext = new SachMuonVM(maSachTruyenSang);
         }
-        private void dgSachMuon_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-        private void btnMuonSach_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
+      
+       
     }
 }

@@ -22,6 +22,7 @@ namespace QLTV_WPF.UI
         public QL_DocGia()
         {
             InitializeComponent();
+            this.DataContext = new QLTV_WPF.ViewModels.DocGiaVM(); // Thêm dòng này
         }
     }
 }

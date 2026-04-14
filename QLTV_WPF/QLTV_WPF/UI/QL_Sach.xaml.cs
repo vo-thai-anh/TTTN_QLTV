@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QLTV_WPF.Models_API; // Thêm namespace chứa ViewModel của bạn
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,9 @@ namespace QLTV_WPF.UI
         public QL_Sach()
         {
             InitializeComponent();
+
+            // Gắn ViewModel vào giao diện
+            DataContext = new SachVM();
         }
     }
 }

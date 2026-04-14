@@ -22,6 +22,7 @@ namespace QLTV_WPF.UI
         public QL_PhieuMuon()
         {
             InitializeComponent();
+            this.DataContext = new QLTV_WPF.ViewModels.PhieuMuonVM();
         }
     }
 }
