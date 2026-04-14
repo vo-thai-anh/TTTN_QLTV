@@ -5,10 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QLTV_WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
+        Title="Quản Lý Thư Viện " Height="450" Width="800 
+        ">
+    <StackPanel Margin="0,12,10,14">
         <Menu VerticalAlignment="Top">
-            <MenuItem Header="Quản lý Loại Sách " Click="MenuItem_Click"/>
+            <MenuItem Header="Quản lý Loại Sách " Click="MenuItemLS_Click"/>
+            <MenuItem Header=" Quản lý đọc giả  " Click="MenuItemDG_Click"/>
+            <MenuItem Header="Quản lý Sách " Click="MenuItemS_Click"/>
+            <MenuItem Header="Quản lý Nhân Viên  " Click="MenuItemNV_Click"/>
+            <MenuItem Header="Quản lý Sách mượn  " Click="MenuItemSM_Click"/>
+            <!--<MenuItem Header="Quản lý Nhà Xuất Bản   " Click="MenuItem_Click"/>
+            <MenuItem Header="Quản lý phiếu mượn  " Click="MenuItem_Click"/>
+            <MenuItem Header=" Quản lý phiếu trả   " Click="MenuItem_Click"/>
+
+            <MenuItem Header="Quản lý Tác giả   " Click="MenuItem_Click"/>-->
         </Menu>
     </StackPanel>
 </Window>

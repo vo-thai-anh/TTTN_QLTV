@@ -20,9 +20,29 @@ namespace QLTV_WPF
         {
             InitializeComponent();
         }
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void MenuItemLS_Click(object sender, RoutedEventArgs e)
         {
             UI.QL_LoaiSach f = new UI.QL_LoaiSach();
+            f.Show();
+        }
+        private void MenuItemDG_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_DocGia f = new UI.QL_DocGia();
+            f.Show();
+        }
+        private void MenuItemNV_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_NhanVien f = new UI.QL_NhanVien();
+            f.Show();
+        }
+        private void MenuItemS_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_Sach f = new UI.QL_Sach();
+            f.Show();
+        }
+        private void MenuItemSM_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_SachMuon f = new UI.QL_SachMuon();
             f.Show();
         }
     }
