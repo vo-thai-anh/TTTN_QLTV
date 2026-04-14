@@ -26,7 +26,6 @@ namespace QLTV_WPF
             f.Show();
         }
 
-        private void MenuItemDG_Click(object sender, RoutedEventArgs e)
 
 
         private void QLDocGia_Click(object sender, RoutedEventArgs e)
@@ -36,8 +35,6 @@ namespace QLTV_WPF
             f.Show();
         }
 
-        private void MenuItemNV_Click(object sender, RoutedEventArgs e)
-
 
         private void QLNhanVien_Click(object sender, RoutedEventArgs e)
 
@@ -45,7 +42,6 @@ namespace QLTV_WPF
             UI.QL_NhanVien f = new UI.QL_NhanVien();
             f.Show();
         }
-        private void MenuItemS_Click(object sender, RoutedEventArgs e)
 
         private void MenuItem_ClickSach(object sender, RoutedEventArgs e)
 
@@ -53,8 +49,6 @@ namespace QLTV_WPF
             UI.QL_Sach f = new UI.QL_Sach();
             f.Show();
         }
-
-        private void MenuItemSM_Click(object sender, RoutedEventArgs e)
 
         private void MenuItem_ClickSachMuon(object sender, RoutedEventArgs e)
 

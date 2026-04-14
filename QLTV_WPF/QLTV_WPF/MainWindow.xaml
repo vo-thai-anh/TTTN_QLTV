@@ -8,31 +8,32 @@
         Title="Quản Lý Thư Viện " Height="450" Width="800 
         ">
     <StackPanel Margin="0,12,10,14">
-        <Menu VerticalAlignment="Top">
-<<<<<<< HEAD
-            <MenuItem Header="Quản lý Loại Sách " Click="MenuItemLS_Click"/>
-            <MenuItem Header=" Quản lý đọc giả  " Click="MenuItemDG_Click"/>
-            <MenuItem Header="Quản lý Sách " Click="MenuItemS_Click"/>
-            <MenuItem Header="Quản lý Nhân Viên  " Click="MenuItemNV_Click"/>
-            <MenuItem Header="Quản lý Sách mượn  " Click="MenuItemSM_Click"/>
-            <!--<MenuItem Header="Quản lý Nhà Xuất Bản   " Click="MenuItem_Click"/>
-            <MenuItem Header="Quản lý phiếu mượn  " Click="MenuItem_Click"/>
-            <MenuItem Header=" Quản lý phiếu trả   " Click="MenuItem_Click"/>
+        <Menu VerticalAlignment="Top" Background="White" Padding="5">
+            <MenuItem Header="Danh mục Sách">
+                <MenuItem Header="Quản lý Loại Sách" Click="MenuItemLS_Click"/>
+                <MenuItem Header="Quản lý Sách" Click="MenuItem_ClickSach"/>
+                <Separator />
+                <MenuItem Header="Quản lý Tác Giả" Click="QLTacGia_Click"/>
+                <MenuItem Header="Quản lý Nhà Xuất Bản" Click="QLNhaXuatBan_Click"/>
+            </MenuItem>
 
-            <MenuItem Header="Quản lý Tác giả   " Click="MenuItem_Click"/>-->
-=======
-            <MenuItem Header="Quản lý Loại Sách " Click="MenuItem_Click"/>
-            <MenuItem Header="Quản lý Sách " Click="MenuItem_ClickSach"/>
-            <MenuItem Header="Quản lý Sách Muon " Click="MenuItem_ClickSachMuon"/>
-            <MenuItem Header="Quản lý Tác Giả " Click="QLTacGia_Click"/>
-            <MenuItem Header="Quản lý NXB " Click="QLNhaXuatBan_Click"/>
-            <MenuItem Header="Quản lý Đôc Giả " Click="QLDocGia_Click"/>
-            <MenuItem Header="Quản lý Nhân Viên " Click="QLNhanVien_Click"/>
-            <MenuItem Header="Quản lý Phiếu Mượn " Click="QLPhieuMuon_Click"/>
-            <MenuItem Header="Quản lý Phiếu Trả " Click="QLPhieuTra_Click"/>
-            <MenuItem Header="Quản lý C.Tiết Mượn " Click="QLChiTietMuon_Click"/>
+            <MenuItem Header="Quản lý Đối tượng">
+                <MenuItem Header="Quản lý Độc Giả" Click="QLDocGia_Click"/>
+                <MenuItem Header="Quản lý Nhân Viên" Click="QLNhanVien_Click"/>
+            </MenuItem>
 
->>>>>>> 7309d805af51027801fd5b52c858ae1b567ad4ef
+            <MenuItem Header="Nghiệp vụ Mượn/Trả">
+                <MenuItem Header="Lập Phiếu Mượn" Click="QLPhieuMuon_Click"/>
+                <MenuItem Header="Lập Phiếu Trả" Click="QLPhieuTra_Click"/>
+                <Separator />
+                <MenuItem Header="Chi Tiết Mượn" Click="QLChiTietMuon_Click"/>
+                <MenuItem Header="Sách Đang Mượn" Click="MenuItem_ClickSachMuon"/>
+            </MenuItem>
+
+            <!--<MenuItem Header="Hệ thống">
+                <MenuItem Header="Đăng xuất" />
+                <MenuItem Header="Thoát" Click="Close"/>
+            </MenuItem>-->
         </Menu>
     </StackPanel>
 </Window>
