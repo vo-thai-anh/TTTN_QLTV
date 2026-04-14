@@ -47,5 +47,15 @@ namespace QLTV_WPF
             UI.QL_SachMuon f = new UI.QL_SachMuon();
             f.Show();
         }
+        private void QLTacGia_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_TacGia f = new UI.QL_TacGia();
+            f.Show();
+        }
+        private void QLNhaXuatBan_Click(object sender, RoutedEventArgs e)
+        {
+            UI.QL_NhaXuatBan f = new UI.QL_NhaXuatBan();
+            f.Show();
+        }
     }
 }
