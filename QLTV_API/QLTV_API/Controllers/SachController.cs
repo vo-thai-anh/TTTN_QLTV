@@ -30,8 +30,10 @@ namespace QLTV_API.Controllers
                     soluong = t.SoLuong,
                     maloai = t.MaLoai,
                     manxb = t.MaNxb,
-                    // THÊM DÒNG NÀY: Lấy tên loại sách thông qua Navigation Property
-                    tenloai = t.MaLoaiNavigation != null ? t.MaLoaiNavigation.TenLoai : ""
+
+                    tenloai = t.MaLoaiNavigation != null ? t.MaLoaiNavigation.TenLoai : "",
+                    tennxb = t.MaNxbNavigation != null ? t.MaNxbNavigation.TenNxb : "",
+                    tentacgia = string.Join(", ", t.MaTgs.Select(tg => tg.TenTg))
                 }).ToList();
                 return Ok(kq);
             }

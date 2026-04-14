@@ -20,6 +20,8 @@ namespace QLTV_WPF.Models
         public int? MaLoai { get; set; }
         public int? MaNxb { get; set; }
         public string? TenLoai { get; set; }
+        public string? TenNXB { get; set; }
+        public string? TenTacGia { get; set; }
 
         public virtual LoaiSach? MaLoaiNavigation { get; set; }
         public virtual NhaXuatBan? MaNxbNavigation { get; set; }

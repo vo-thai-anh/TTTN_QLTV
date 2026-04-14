@@ -14,11 +14,19 @@ namespace QLTV_WPF.Models_API
             //Lấy danh sách Loại sách từ API
             ListLoaiSach = CXuLyLoaiSach.getdsls();
 
+            ListNXB = CXuLyNhaXuatBan.getdsnxb();
+
             cmdthemsach = new RelayCommand(ThemSach_Execute, ThemSach_CanExecute);
             cmdsuasach = new RelayCommand(SuaSach_Execute, SuaSach_CanExecute);
             cmdxoasach = new RelayCommand(XoaSach_Execute, XoaSach_CanExecute);
             cmdlammoi = new RelayCommand(p => LamMoi());
             cmdMoKhoSach = new RelayCommand(MoKhoSach_Execute, MoKhoSach_CanExecute);
+
+            cmdQuanLyTacGia = new RelayCommand(p => {
+                var popup = new UI.QL_Sach_TacGia(SelectedSach.MaSach, SelectedSach.TenSach);
+                popup.ShowDialog();
+            }, p => SelectedSach != null);
+
         }
 
         // Khai báo Commands
@@ -27,6 +35,7 @@ namespace QLTV_WPF.Models_API
         public RelayCommand cmdxoasach { get; set; }
         public RelayCommand cmdlammoi { get; set; }
         public RelayCommand cmdMoKhoSach { get; set; }
+        public RelayCommand cmdQuanLyTacGia { get; set; }
 
         // Danh sách sách hiển thị lên DataGrid
         private List<Sach> m_listSach;
@@ -45,6 +54,12 @@ namespace QLTV_WPF.Models_API
         {
             get { return m_listLoaiSach; }
             set { m_listLoaiSach = value; NotifyPropertyChanged("ListLoaiSach"); }
+        }
+        private List<NhaXuatBan> m_listNXB;
+        public List<NhaXuatBan> ListNXB
+        {
+            get { return m_listNXB; }
+            set { m_listNXB = value; NotifyPropertyChanged("ListNXB"); }
         }
         // Các thuộc tính Binding lên TextBox
         private string m_tensach;
