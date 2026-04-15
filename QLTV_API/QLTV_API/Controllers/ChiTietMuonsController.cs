@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QLTV_API.Models;
 using System.Collections.Generic;
@@ -48,10 +48,37 @@ namespace QLTV_API.Controllers
             if (ct.MaSachMuon == 0)
                 return BadRequest("Thiếu mã sách");
 
-            _context.ChiTietMuons.Add(ct);
-            await _context.SaveChangesAsync();
+            // KIỂM TRA SÁCH CÓ THỂ MƯỢN ĐƯỢC HAY KHÔNG
+            var sachMuon = await _context.SachMuons.FirstOrDefaultAsync(s => s.MaSachMuon == ct.MaSachMuon);
+            if (sachMuon == null)
+                return NotFound("Không tìm thấy mã Sách Mượn này trong kho.");
+            
+            if (sachMuon.TrangThai == 1)
+                return BadRequest("Cuốn sách này đang được người khác mượn, chưa trả lại kho!");
 
-            return Ok("Thêm chi tiết mượn thành công");
+            // Dùng Transaction để đảm bảo tính toàn vẹn 2 bản ghi
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // 1. Thêm Chi Tiết Mượn
+                    _context.ChiTietMuons.Add(ct);
+                    
+                    // 2. Cập nhật Trạng Thái Sách = 1 (Đã mượn)
+                    sachMuon.TrangThai = 1;
+                    _context.Entry(sachMuon).State = EntityState.Modified;
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok("Thêm mục mượn sách thành công");
+                }
+                catch (System.Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, "Lỗi máy chủ khi mượn sách: " + ex.Message);
+                }
+            }
         }
 
         // PUT (trả sách)
@@ -64,17 +91,38 @@ namespace QLTV_API.Controllers
             if (existing == null)
                 return NotFound("Không tìm thấy chi tiết mượn");
 
-            existing.NgayTraThucTe = ct.NgayTraThucTe;
-            existing.TienPhat = ct.TienPhat;
-            existing.LyDoPhat = ct.LyDoPhat;
-            existing.MaPhieuTra = ct.MaPhieuTra;
+            var sachMuon = await _context.SachMuons.FirstOrDefaultAsync(s => s.MaSachMuon == ct.MaSachMuon);
+            if (sachMuon == null)
+                return NotFound("Không tìm thấy mã sách vật lý này.");
 
-            await _context.SaveChangesAsync();
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // 1. Cập nhật Phiếu Trả vào ChiTietMuon
+                    existing.NgayTraThucTe = ct.NgayTraThucTe ?? System.DateTime.Now;
+                    existing.TienPhat = ct.TienPhat;
+                    existing.LyDoPhat = ct.LyDoPhat;
+                    existing.MaPhieuTra = ct.MaPhieuTra;
 
-            return Ok("Cập nhật trả sách thành công");
+                    // 2. Mở khóa nhả Sách về kho (Trạng thái = 0)
+                    sachMuon.TrangThai = 0;
+                    _context.Entry(sachMuon).State = EntityState.Modified;
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok("Cập nhật trả sách và thu hồi sách về kho thành công");
+                }
+                catch (System.Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, "Lỗi máy chủ khi trả sách: " + ex.Message);
+                }
+            }
         }
 
-        // DELETE
+        // DELETE (xóa nhầm sách khỏi giỏ hàng trước khi trả)
         [HttpDelete]
         public async Task<IActionResult> Delete(int maPhieuMuon, int maSachMuon)
         {
@@ -82,12 +130,35 @@ namespace QLTV_API.Controllers
                 .FirstOrDefaultAsync(x => x.MaPhieuMuon == maPhieuMuon && x.MaSachMuon == maSachMuon);
 
             if (ct == null)
-                return NotFound("Không tìm thấy");
+                return NotFound("Không tìm thấy mục chi tiết mượn này");
 
-            _context.ChiTietMuons.Remove(ct);
-            await _context.SaveChangesAsync();
+            var sachMuon = await _context.SachMuons.FirstOrDefaultAsync(s => s.MaSachMuon == maSachMuon);
 
-            return Ok("Đã xóa");
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // 1. Gỡ khỏi hóa đơn mượn
+                    _context.ChiTietMuons.Remove(ct);
+
+                    // 2. Mở khóa nhả lại sách về kệ đọc (Nếu sách đã lỡ chuyển Trạng Thái = 1)
+                    if (sachMuon != null && sachMuon.TrangThai == 1)
+                    {
+                        sachMuon.TrangThai = 0;
+                        _context.Entry(sachMuon).State = EntityState.Modified;
+                    }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+
+                    return Ok("Hủy bỏ chi tiết mượn và cập nhật lại kho");
+                }
+                catch (System.Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, "Lỗi khi xóa chi tiết mượn: " + ex.Message);
+                }
+            }
         }
     }
 }

@@ -14,11 +14,33 @@ namespace QLTV_WPF.Models_API
             //Lấy danh sách Loại sách từ API
             ListLoaiSach = CXuLyLoaiSach.getdsls();
 
+            ListNXB = CXuLyNhaXuatBan.getdsnxb();
+
             cmdthemsach = new RelayCommand(ThemSach_Execute, ThemSach_CanExecute);
             cmdsuasach = new RelayCommand(SuaSach_Execute, SuaSach_CanExecute);
             cmdxoasach = new RelayCommand(XoaSach_Execute, XoaSach_CanExecute);
             cmdlammoi = new RelayCommand(p => LamMoi());
             cmdMoKhoSach = new RelayCommand(MoKhoSach_Execute, MoKhoSach_CanExecute);
+
+            cmdQuanLyTacGia = new RelayCommand(p => {
+                if (SelectedSach != null)
+                {
+                    // Chế độ 1: Đang chọn sách cũ để sửa
+                    var popup = new UI.QL_Sach_TacGia(SelectedSach.MaSach, SelectedSach.TenSach);
+                    popup.ShowDialog();
+                    ListSach = CXuLySach.getdssach(); // Cập nhật lại UI bảng chính
+                }
+                else
+                {
+                    // Chế độ 2: Đang nhập sách mới
+                    var popup = new UI.QL_Sach_TacGia(null, Tensach, m_dsTacGiaTam);
+                    if (popup.ShowDialog() == true)
+                    {
+                        m_dsTacGiaTam = popup.SelectedIds; // Cất danh sách vừa chọn vào biến tạm
+                    }
+                }
+            }, p => true); // ĐỔI THÀNH TRUE ĐỂ NÚT Tác giả LUÔN SÁNG
+
         }
 
         // Khai báo Commands
@@ -27,6 +49,7 @@ namespace QLTV_WPF.Models_API
         public RelayCommand cmdxoasach { get; set; }
         public RelayCommand cmdlammoi { get; set; }
         public RelayCommand cmdMoKhoSach { get; set; }
+        public RelayCommand cmdQuanLyTacGia { get; set; }
 
         // Danh sách sách hiển thị lên DataGrid
         private List<Sach> m_listSach;
@@ -39,12 +62,22 @@ namespace QLTV_WPF.Models_API
                 NotifyPropertyChanged("ListSach");
             }
         }
+        // Biến tạm để lưu danh sách mã tác giả khi thêm mới sách (chưa có mã sách để lấy từ DB)
+        private List<int> m_dsTacGiaTam = new List<int>();
+
+
         private List<LoaiSach> m_listLoaiSach;
         // Danh sách loại sách hiển thị lên comboBox Loại sách
         public List<LoaiSach> ListLoaiSach
         {
             get { return m_listLoaiSach; }
             set { m_listLoaiSach = value; NotifyPropertyChanged("ListLoaiSach"); }
+        }
+        private List<NhaXuatBan> m_listNXB;
+        public List<NhaXuatBan> ListNXB
+        {
+            get { return m_listNXB; }
+            set { m_listNXB = value; NotifyPropertyChanged("ListNXB"); }
         }
         // Các thuộc tính Binding lên TextBox
         private string m_tensach;
@@ -129,7 +162,9 @@ namespace QLTV_WPF.Models_API
                 TomTat = this.Tomtat,
                 SoLuong = this.Soluong,
                 MaLoai = this.Maloai,
-                MaNxb = this.Manxb
+                MaNxb = this.Manxb,
+
+                MaTGIds = m_dsTacGiaTam
             };
 
             bool thanhCong = CXuLySach.themsach(moi);
@@ -138,6 +173,8 @@ namespace QLTV_WPF.Models_API
             {
                 ListSach = CXuLySach.getdssach();
                 LamMoi();
+                // Reset mảng tạm về rỗng để chuẩn bị cho lần thêm sách tiếp theo
+                m_dsTacGiaTam.Clear();
                 System.Windows.MessageBox.Show("Thêm sách thành công!");
             }
             else

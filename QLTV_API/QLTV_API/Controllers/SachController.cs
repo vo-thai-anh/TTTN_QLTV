@@ -30,8 +30,10 @@ namespace QLTV_API.Controllers
                     soluong = t.SoLuong,
                     maloai = t.MaLoai,
                     manxb = t.MaNxb,
-                    // THÊM DÒNG NÀY: Lấy tên loại sách thông qua Navigation Property
-                    tenloai = t.MaLoaiNavigation != null ? t.MaLoaiNavigation.TenLoai : ""
+
+                    tenloai = t.MaLoaiNavigation != null ? t.MaLoaiNavigation.TenLoai : "",
+                    tennxb = t.MaNxbNavigation != null ? t.MaNxbNavigation.TenNxb : "",
+                    tentacgia = string.Join(", ", t.MaTgs.Select(tg => tg.TenTg))
                 }).ToList();
                 return Ok(kq);
             }
@@ -58,8 +60,18 @@ namespace QLTV_API.Controllers
                     MaNxb = s.MaNxb
                 };
 
+                //Nếu có danh sách tác giả gửi kèm thì thêm luôn vào sách
+                if (s.MaTGIds != null && s.MaTGIds.Count > 0)
+                {
+                    var tacGias = db.TacGia.Where(tg => s.MaTGIds.Contains(tg.MaTg)).ToList();
+                    foreach (var tg in tacGias)
+                    {
+                        a.MaTgs.Add(tg);
+                    }
+                }
+
                 db.Saches.Add(a);
-                db.SaveChanges();
+                db.SaveChanges(); 
 
                 return Ok(a);
             }
