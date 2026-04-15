@@ -90,6 +90,14 @@ namespace QLTV_WPF.Models_API
         }
         public bool ThemLS_CanExecute(object parameter)
         {
+            if (string.IsNullOrWhiteSpace(Tenloai))
+                return false;
+
+            if (ListloaiSach != null && ListloaiSach.Any(x => x.TenLoai.Trim().ToLower() == Tenloai.Trim().ToLower()))
+            {
+                return false;
+            }
+
             return true;
         }
         public void SuaLS_Execute(object parameter)
@@ -107,13 +115,10 @@ namespace QLTV_WPF.Models_API
             {
                 System.Windows.MessageBox.Show("Sửa loại sách thành công!", "Thông báo");
 
-                // 1. Tải lại DataGrid
                 ListloaiSach = CXuLyLoaiSach.getdsls();
 
-                // 2. Ép DataGrid bỏ chọn dòng cũ
                 SelectedLoaiSach = null;
 
-                // 3. Làm rỗng TextBox (Bây giờ dây Binding đã nối lại, nó sẽ xóa chữ trên màn hình)
                 Tenloai = string.Empty;
                 Mota = string.Empty;
             }
@@ -124,39 +129,54 @@ namespace QLTV_WPF.Models_API
         }
         public bool SuaLS_CanExecute(object parameter)
         {
-            return SelectedLoaiSach != null;
+            if (SelectedLoaiSach == null) return false;
+
+            if (string.IsNullOrWhiteSpace(Tenloai)) return false;
+
+
+            if (ListloaiSach != null)
+            {
+                bool biTrung = ListloaiSach.Any(x =>
+                    x.MaLoai != SelectedLoaiSach.MaLoai &&
+                    x.TenLoai.Trim().ToLower() == Tenloai.Trim().ToLower());
+
+                if (biTrung) return false;
+            }
+
+            return true;
         }
         public void XoaLS_Execute(object parameter)
         {
-            // Hỏi lại người dùng cho chắc chắn trước khi xóa
-            var xacNhan = System.Windows.MessageBox.Show("Bạn có chắc chắn muốn xóa loại sách này không?",
-                                                         "Xác nhận xóa",
-                                                         System.Windows.MessageBoxButton.YesNo,
-                                                         System.Windows.MessageBoxImage.Warning);
+            if (SelectedLoaiSach.Saches != null && SelectedLoaiSach.Saches.Count > 0)
+            {
+                System.Windows.MessageBox.Show("Không thể xóa! Loại sách này đang chứa " + SelectedLoaiSach.Saches.Count + " cuốn sách.",
+                    "Cảnh báo", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Stop);
+                return;
+            }
+            var xacNhan = System.Windows.MessageBox.Show("Bạn có chắc chắn muốn xóa loại sách này?", "Xác nhận",
+                System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question);
 
             if (xacNhan == System.Windows.MessageBoxResult.Yes)
             {
-                // Gọi API để xóa dựa vào Mã loại đang chọn
                 bool thanhCong = CXuLyLoaiSach.xoals(SelectedLoaiSach.MaLoai);
-
                 if (thanhCong)
                 {
-                    // Tải lại danh sách và xóa trắng form nhập liệu
-                    ListloaiSach = CXuLyLoaiSach.getdsls();
-                    Tenloai = string.Empty;
-                    Mota = string.Empty;
-
-                    System.Windows.MessageBox.Show("Xóa loại sách thành công!", "Thông báo");
+                    RefreshData("Xóa thành công!");
                 }
                 else
                 {
-                    System.Windows.MessageBox.Show("Xóa thất bại. Có thể loại sách này đang chứa sách.", "Lỗi");
+                    System.Windows.MessageBox.Show("Xóa thất bại! Có lỗi hệ thống hoặc dữ liệu liên quan không thể xóa.", "Lỗi");
                 }
             }
         }
         public bool XoaLS_CanExecute(object parameter)
         {
-            return SelectedLoaiSach != null;
+            if (SelectedLoaiSach == null) return false;
+
+            if (SelectedLoaiSach.Saches != null && SelectedLoaiSach.Saches.Any())
+                return false;
+
+            return true;
         }
         private void LamMoi()
         {
