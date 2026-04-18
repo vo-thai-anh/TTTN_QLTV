@@ -11,12 +11,12 @@ namespace QLTV_API.Models
             PhieuMuons = new HashSet<PhieuMuon>();
             PhieuTras = new HashSet<PhieuTra>();
         }
-
+        //"?" có nghĩa là trường này có thể null
         public int MaNv { get; set; }
         public string HoTen { get; set; } = null!;
-        public string? ChucVu { get; set; }
-        public string? TaiKhoan { get; set; }
-        public string? MatKhau { get; set; }
+        public string ChucVu { get; set; }
+        public string TaiKhoan { get; set; }
+        public string MatKhau { get; set; }
         public string? Email { get; set; }
         public string? Sdt { get; set; }
         [JsonIgnore]
