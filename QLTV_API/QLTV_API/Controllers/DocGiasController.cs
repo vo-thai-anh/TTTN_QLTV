@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using QLTV_API.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace QLTV_API.Controllers
@@ -18,14 +19,14 @@ namespace QLTV_API.Controllers
             _context = context;
         }
 
-        // 1. GET: api/DocGias - Lấy toàn bộ danh sách
+        // 1. GET - Lấy toàn bộ danh sách
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DocGia>>> GetDocGias()
         {
             return await _context.DocGia.ToListAsync();
         }
 
-        // 2. GET: api/DocGias/5 - Xem chi tiết theo Mã (int)
+        // 2. GET - Xem chi tiết theo Mã (int)
         [HttpGet("{id}")]
         public async Task<ActionResult<DocGia>> GetDocGia(int id)
         {
@@ -34,49 +35,40 @@ namespace QLTV_API.Controllers
             return docGia;
         }
 
-        // 3. POST: api/DocGias - Thêm mới với ràng buộc từ Controller
+        // 3. POST
         [HttpPost]
         public async Task<ActionResult<DocGia>> PostDocGia(DocGia docGia)
         {
-            // --- KIỂM TRA RÀNG BUỘC (VALIDATION) ---
-
-            // Mã Độc Giả: Vì là int Identity nên ta để SQL tự tăng, reset về 0 để tránh lỗi
             docGia.MaDocGia = 0;
 
-            // Họ Tên: Mandatory (M), Max 100 chars
-            if (string.IsNullOrWhiteSpace(docGia.HoTen))
-                return BadRequest("Lỗi: Họ tên không được để trống (M).");
-            if (docGia.HoTen.Length > 100)
-                return BadRequest("Lỗi: Họ tên tối đa 100 ký tự.");
+            // 1. Kiểm tra SĐT (Phải đúng 10 số)
+            if (!Regex.IsMatch(docGia.Sdt ?? "", @"^\d{10}$"))
+                return BadRequest("Lỗi: Số điện thoại phải đúng 10 chữ số.");
 
-            // Địa Chỉ: Max 200 chars
-            if (docGia.DiaChi?.Length > 200)
-                return BadRequest("Lỗi: Địa chỉ tối đa 200 ký tự.");
+            // 2. Kiểm tra Họ tên (Không ký tự lạ)
+            string patternTen = @"^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵýỷỹ\s]+$";
+            if (!Regex.IsMatch(docGia.HoTen ?? "", patternTen))
+                return BadRequest("Lỗi: Họ tên không được chứa số hoặc ký tự đặc biệt.");
 
-            // Email: Max 100 chars
-            if (docGia.Email?.Length > 100)
-                return BadRequest("Lỗi: Email tối đa 100 ký tự.");
-
-            // SĐT: Max 15 chars (Sử dụng AnyAsync để kiểm tra duy nhất nếu An muốn)
-            if (docGia.Sdt?.Length > 15)
-                return BadRequest("Lỗi: Số điện thoại tối đa 15 ký tự.");
-
-            // --- LƯU VÀO DATABASE ---
             _context.DocGia.Add(docGia);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetDocGia), new { id = docGia.MaDocGia }, docGia);
         }
 
+        // 4. PUT
         [HttpPut("{id}")]
         public async Task<IActionResult> PutDocGia(int id, DocGia docGia)
         {
-            // Thay vì báo lỗi nếu không khớp, mình "ép" ID trong JSON phải theo ID trên URL
-            docGia.MaDocGia = id;
+            if (id != docGia.MaDocGia) docGia.MaDocGia = id;
 
-            // Kiểm tra ràng buộc Họ tên như cũ
+            if (!Regex.IsMatch(docGia.Sdt ?? "", @"^\d{10}$"))
+                return BadRequest("Lỗi: Số điện thoại phải đúng 10 chữ số.");
+
             if (string.IsNullOrWhiteSpace(docGia.HoTen))
                 return BadRequest("Lỗi: Họ tên không được để trống.");
+
+            docGia.Email = string.IsNullOrWhiteSpace(docGia.Email) ? null : docGia.Email;
 
             _context.Entry(docGia).State = EntityState.Modified;
 
@@ -86,34 +78,34 @@ namespace QLTV_API.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.DocGia.Any(e => e.MaDocGia == id)) return NotFound("Không tìm thấy độc giả.");
+                if (!_context.DocGia.Any(e => e.MaDocGia == id)) return NotFound();
                 else throw;
             }
-
             return Ok("Cập nhật thông tin thành công.");
         }
 
-        // 5. DELETE: api/DocGias/5 - Xóa thẻ
+        // 5. DELETE:
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDocGia(int id)
         {
+            // kiểm tra phiếu mượn
+            bool daTungMuonSach = await _context.PhieuMuons.AnyAsync(p => p.MaDocGia == id);
+
+            if (daTungMuonSach)
+            {
+                return BadRequest("Không thể xóa độc giả này!");
+            }
+
+            // Nếu chưa từng mượn gì 
             var docGia = await _context.DocGia.FindAsync(id);
-            if (docGia == null) return NotFound("Không tìm thấy độc giả.");
+            if (docGia == null) return NotFound("Không tìm thấy độc giả này.");
 
-            try
-            {
-                _context.DocGia.Remove(docGia);
-                await _context.SaveChangesAsync();
-                return Ok("Đã xóa độc giả thành công.");
-            }
-            catch (DbUpdateException)
-            {
-                // Bắt lỗi ràng buộc khóa ngoại (Ràng buộc 1.1.2)
-                return BadRequest("Lỗi: Độc giả này đang có phiếu mượn sách, không thể xóa!");
-            }
+            _context.DocGia.Remove(docGia);
+            await _context.SaveChangesAsync();
+
+            return Ok("Đã xóa độc giả thành công.");
         }
-
-        // 6. GET: api/DocGias/Search?keyword=an - Tìm kiếm tên không dấu hoặc SĐT
+        // 6. GET - Tìm kiếm tên không dấu hoặc SĐT
         [HttpGet("Search")]
         public async Task<ActionResult<IEnumerable<DocGia>>> SearchDocGia(string keyword)
         {
