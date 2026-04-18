@@ -1,21 +1,31 @@
-﻿using QLTV_WPF.Models;
+using QLTV_WPF.Models;
 using QLTV_WPF.Models_API;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.ComponentModel;
 using System.Windows.Data;
 
 namespace QLTV_WPF.ViewModels
 {
+    // DTO để hiển thị tên đầy đủ trong DataGrid
+    public class PhieuMuonHienThi
+    {
+        public int MaPhieuMuon { get; set; }
+        public string TenNhanVien { get; set; }
+        public string TenDocGia { get; set; }
+        public DateTime? NgayMuon { get; set; }
+        public DateTime? NgayTra { get; set; }
+        public string GhiChu { get; set; }
+    }
     class PhieuMuonVM : CBaseMVVM
     {
         public PhieuMuonVM()
         {
-            LoadData();
-
             ListDocGia = CXuLyDocGia.getdsdg();
             ListNhanVien = CXuLyNhanVien.GetDsNhanVien();
+            LoadData();
             var viewDocGia = CollectionViewSource.GetDefaultView(ListDocGia);
             viewDocGia.Filter = (item) =>
             {
@@ -48,6 +58,34 @@ namespace QLTV_WPF.ViewModels
             get => _list;
             set { _list = value; NotifyPropertyChanged("List"); }
         }
+
+        private List<PhieuMuonHienThi> _listHienThi;
+        public List<PhieuMuonHienThi> ListHienThi
+        {
+            get => _listHienThi;
+            set { _listHienThi = value; NotifyPropertyChanged("ListHienThi"); }
+        }
+
+        private PhieuMuonHienThi _selectedHienThi;
+        public PhieuMuonHienThi SelectedHienThi
+        {
+            get => _selectedHienThi;
+            set
+            {
+                _selectedHienThi = value;
+                NotifyPropertyChanged("SelectedHienThi");
+                if (value != null)
+                {
+                    // Tìm PhieuMuon gốc để dùng cho Sửa/Xóa
+                    Selected = List?.FirstOrDefault(pm => pm.MaPhieuMuon == value.MaPhieuMuon);
+                }
+                else
+                {
+                    Selected = null;
+                }
+            }
+        }
+
         private List<DocGia> _listDocGia;
         public List<DocGia> ListDocGia
         {
@@ -110,12 +148,31 @@ namespace QLTV_WPF.ViewModels
             }
         }
 
-        void LoadData() => List = CXuLyPhieuMuon.getds();
+        void LoadData()
+        {
+            List = CXuLyPhieuMuon.getds();
+            BuildListHienThi();
+        }
+
+        void BuildListHienThi()
+        {
+            if (List == null) return;
+            ListHienThi = List.Select(pm => new PhieuMuonHienThi
+            {
+                MaPhieuMuon = pm.MaPhieuMuon,
+                TenNhanVien = ListNhanVien?.FirstOrDefault(nv => nv.MaNv == pm.MaNhanVien)?.HoTen ?? pm.MaNhanVien?.ToString(),
+                TenDocGia   = ListDocGia?.FirstOrDefault(dg => dg.MaDocGia == pm.MaDocGia)?.HoTen ?? pm.MaDocGia?.ToString(),
+                NgayMuon    = pm.NgayMuon,
+                NgayTra     = pm.NgayTra,
+                GhiChu      = pm.GhiChu
+            }).ToList();
+        }
 
         void Search()
         {
             if (string.IsNullOrWhiteSpace(Keyword)) { LoadData(); return; }
             List = CXuLyPhieuMuon.search(Keyword);
+            BuildListHienThi();
         }
 
         bool KiemTra()
@@ -206,6 +263,7 @@ namespace QLTV_WPF.ViewModels
             GhiChu = "";
             Keyword = "";
             Selected = null;
+            SelectedHienThi = null;
         }
     }
 }
