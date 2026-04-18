@@ -82,7 +82,7 @@ namespace QLTV_WPF
 
         private void QLChiTietMuon_Click(object sender, RoutedEventArgs e)
         {
-            UI.QL_ChiTietMuon f = new UI.QL_ChiTietMuon();
+            UI.QL_ChiTietMuon f = new UI.QL_ChiTietMuon(0);
             f.Show();
         }
 
