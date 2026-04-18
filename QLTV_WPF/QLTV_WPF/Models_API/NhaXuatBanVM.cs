@@ -14,7 +14,10 @@ namespace QLTV_WPF.Models_API
         public NhaXuatBanVM()
         {
             ListNhaXuatBan = CXuLyNhaXuatBan.getdsnxb();
-            cmdthemnxb = new RelayCommand(ThemNXB_Execute, p => true);
+
+            // CHỈ CHO PHÉP THÊM KHI ĐANG KHÔNG CHỌN NXB NÀO
+            cmdthemnxb = new RelayCommand(ThemNXB_Execute, p => SelectedNXB == null);
+
             cmdsuanxb = new RelayCommand(SuaNXB_Execute, p => SelectedNXB != null);
             cmdxoanxb = new RelayCommand(XoaNXB_Execute, p => SelectedNXB != null);
             cmdlammoi = new RelayCommand(p => LamMoi(), p => true);
@@ -44,7 +47,6 @@ namespace QLTV_WPF.Models_API
         private string m_sdt;
         public string Sdt { get => m_sdt; set { m_sdt = value; NotifyPropertyChanged("Sdt"); } }
 
-
         private string m_tuKhoa;
         public string TuKhoa { get => m_tuKhoa; set { m_tuKhoa = value; NotifyPropertyChanged("TuKhoa"); } }
 
@@ -66,12 +68,52 @@ namespace QLTV_WPF.Models_API
             }
         }
 
-        private void ThemNXB_Execute(object p)
+        // HÀM KIỂM TRA RỖNG VÀ KIỂU DỮ LIỆU
+        private bool KiemTraRong()
         {
             if (string.IsNullOrWhiteSpace(Tennxb))
             {
-                MessageBox.Show("Vui lòng nhập tên nhà xuất bản!", "Cảnh báo");
-                return;
+                MessageBox.Show("Vui lòng nhập Tên nhà xuất bản!", "Cảnh báo");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(Diachi))
+            {
+                MessageBox.Show("Vui lòng nhập Địa chỉ!", "Cảnh báo");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(Sdt))
+            {
+                MessageBox.Show("Vui lòng nhập Số điện thoại!", "Cảnh báo");
+                return false;
+            }
+
+            if (!Sdt.All(char.IsDigit))
+            {
+                MessageBox.Show("Số điện thoại không hợp lệ! Vui lòng chỉ nhập số.", "Cảnh báo");
+                return false;
+            }
+
+            return true;
+        }
+
+        private void ThemNXB_Execute(object p)
+        {
+            if (!KiemTraRong()) return;
+
+            var danhSach = CXuLyNhaXuatBan.getdsnxb();
+            if (danhSach != null)
+            {
+                
+                if (danhSach.Any(x => x.DiaChi != null && x.DiaChi.ToLower() == Diachi.ToLower()))
+                {
+                    MessageBox.Show("Địa chỉ này đã được sử dụng cho một Nhà xuất bản khác!", "Cảnh báo");
+                    return;
+                }
+                if (danhSach.Any(x => x.Sdt != null && x.Sdt == Sdt))
+                {
+                    MessageBox.Show("Số điện thoại này đã được đăng ký!", "Cảnh báo");
+                    return;
+                }
             }
 
             NhaXuatBan moi = new NhaXuatBan { TenNxb = Tennxb, DiaChi = Diachi, Sdt = Sdt };
@@ -88,6 +130,27 @@ namespace QLTV_WPF.Models_API
 
         private void SuaNXB_Execute(object p)
         {
+            if (!KiemTraRong()) return;
+
+            var danhSach = CXuLyNhaXuatBan.getdsnxb();
+            if (danhSach != null)
+            {
+               
+                int maHienTai = SelectedNXB.MaNxb;
+
+                
+                if (danhSach.Any(x => x.DiaChi != null && x.DiaChi.ToLower() == Diachi.ToLower() && x.MaNxb != maHienTai))
+                {
+                    MessageBox.Show("Địa chỉ này đã được sử dụng cho một Nhà xuất bản khác!", "Cảnh báo");
+                    return;
+                }
+                if (danhSach.Any(x => x.Sdt != null && x.Sdt == Sdt && x.MaNxb != maHienTai))
+                {
+                    MessageBox.Show("Số điện thoại này đã được đăng ký!", "Cảnh báo");
+                    return;
+                }
+            }
+
             NhaXuatBan update = new NhaXuatBan { MaNxb = SelectedNXB.MaNxb, TenNxb = Tennxb, DiaChi = Diachi, Sdt = Sdt };
             if (CXuLyNhaXuatBan.suanxb(update))
             {
@@ -98,12 +161,17 @@ namespace QLTV_WPF.Models_API
 
         private void XoaNXB_Execute(object p)
         {
-            if (MessageBox.Show("Xóa nhà xuất bản này?", "Cảnh báo", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Xóa nhà xuất bản này?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 if (CXuLyNhaXuatBan.xoanxb(SelectedNXB.MaNxb))
                 {
                     LamMoi();
+                    MessageBox.Show("Xóa thành công!", "Thông báo");
                 }
+            }
+            else
+            {
+                MessageBox.Show("Xóa thất bại! Vui lòng kiểm tra kết nối.", "Lỗi");
             }
         }
 
@@ -122,12 +190,12 @@ namespace QLTV_WPF.Models_API
 
         private void LamMoi()
         {
-            Manxb = null; // Đảm bảo ô ID được xóa trắng
+            Manxb = null;
             Tennxb = "";
             Diachi = "";
             Sdt = "";
             TuKhoa = "";
-            SelectedNXB = null;
+            SelectedNXB = null; // Trả về null để nút Thêm sáng lên lại
             ListNhaXuatBan = CXuLyNhaXuatBan.getdsnxb();
         }
     }

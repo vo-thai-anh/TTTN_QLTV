@@ -12,7 +12,8 @@ namespace QLTV_WPF.Models_API
         {
             ListTacGia = CXuLyTacGia.getdstg();
 
-            cmdthemtg = new RelayCommand(ThemTG_Execute, p => true);
+            cmdthemtg = new RelayCommand(ThemTG_Execute, p => SelectedTacGia == null);
+
             cmdsuatg = new RelayCommand(SuaTG_Execute, p => SelectedTacGia != null);
             cmdxoatg = new RelayCommand(XoaTG_Execute, p => SelectedTacGia != null);
             cmdlammoi = new RelayCommand(p => LamMoi(), p => true);
@@ -26,24 +27,22 @@ namespace QLTV_WPF.Models_API
         public RelayCommand cmdTimKiem { get; set; }
 
         private List<TacGia> m_listTacGia;
-        public List<TacGia> ListTacGia
-        {
-            get => m_listTacGia;
-            set { m_listTacGia = value; NotifyPropertyChanged("ListTacGia"); }
-        }
+        public List<TacGia> ListTacGia { get => m_listTacGia; set { m_listTacGia = value; NotifyPropertyChanged("ListTacGia"); } }
 
         private string m_tentg;
         public string Tentg { get => m_tentg; set { m_tentg = value; NotifyPropertyChanged("Tentg"); } }
+
+        private string m_butDanh;
+        public string ButDanh { get => m_butDanh; set { m_butDanh = value; NotifyPropertyChanged("ButDanh"); } }
+
+        private string m_strNamSinh;
+        public string StrNamSinh { get => m_strNamSinh; set { m_strNamSinh = value; NotifyPropertyChanged("StrNamSinh"); } }
 
         private string m_tieusu;
         public string Tieusu { get => m_tieusu; set { m_tieusu = value; NotifyPropertyChanged("Tieusu"); } }
 
         private string m_tuKhoa;
-        public string TuKhoa
-        {
-            get => m_tuKhoa;
-            set { m_tuKhoa = value; NotifyPropertyChanged("TuKhoa"); }
-        }
+        public string TuKhoa { get => m_tuKhoa; set { m_tuKhoa = value; NotifyPropertyChanged("TuKhoa"); } }
 
         private TacGia m_selectedTacGia;
         public TacGia SelectedTacGia
@@ -52,35 +51,84 @@ namespace QLTV_WPF.Models_API
             set
             {
                 m_selectedTacGia = value;
-                if (value != null) { Tentg = value.TenTg; Tieusu = value.TieuSu; }
+                if (value != null)
+                {
+                    Tentg = value.TenTg;
+                    Tieusu = value.TieuSu;
+                    ButDanh = value.Butdanh;
+                    StrNamSinh = value.Namsinh?.ToString();
+                }
                 NotifyPropertyChanged("SelectedTacGia");
             }
         }
 
-        private void ThemTG_Execute(object p)
+        private bool KiemTraRong()
         {
             if (string.IsNullOrWhiteSpace(Tentg))
             {
-                MessageBox.Show("Vui lòng nhập tên tác giả!", "Cảnh báo");
+                MessageBox.Show("Vui lòng nhập Tên tác giả!", "Cảnh báo");
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(ButDanh))
+            {
+                MessageBox.Show("Vui lòng nhập Bút danh!", "Cảnh báo");
+                return false;
+            }
+
+            // KIỂM TRA NĂM SINH
+            if (string.IsNullOrWhiteSpace(StrNamSinh))
+            {
+                MessageBox.Show("Vui lòng nhập Năm sinh!", "Cảnh báo");
+                return false;
+            }
+            if (!int.TryParse(StrNamSinh, out int ns))
+            {
+                MessageBox.Show("Năm sinh không hợp lệ! Vui lòng chỉ nhập số (Ví dụ: 1990).", "Cảnh báo");
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(Tieusu))
+            {
+                MessageBox.Show("Vui lòng nhập Tiểu sử!", "Cảnh báo");
+                return false;
+            }
+            return true;
+        }
+
+        private void ThemTG_Execute(object p)
+        {
+            if (!KiemTraRong()) return;
+
+            var danhSachTG = CXuLyTacGia.getdstg();
+            if (danhSachTG != null && danhSachTG.Any(x => x.Butdanh != null && x.Butdanh.ToLower() == ButDanh.ToLower()))
+            {
+                MessageBox.Show("Bút danh này đã tồn tại! Vui lòng chọn bút danh khác.", "Cảnh báo");
                 return;
             }
 
-            TacGia moi = new TacGia { TenTg = Tentg, TieuSu = Tieusu };
+            int namSinhInt = int.Parse(StrNamSinh); // Đã an toàn để ép kiểu
+            TacGia moi = new TacGia { TenTg = Tentg, TieuSu = Tieusu, Butdanh = ButDanh, Namsinh = namSinhInt };
             if (CXuLyTacGia.themtg(moi))
             {
                 ListTacGia = CXuLyTacGia.getdstg();
                 LamMoi();
                 MessageBox.Show("Thêm thành công!", "Thông báo");
             }
-            else
-            {
-                MessageBox.Show("Thêm thất bại! Vui lòng kiểm tra lại.", "Lỗi");
-            }
         }
 
         private void SuaTG_Execute(object p)
         {
-            TacGia update = new TacGia { MaTg = SelectedTacGia.MaTg, TenTg = Tentg, TieuSu = Tieusu };
+            if (!KiemTraRong()) return;
+
+            var danhSachTG = CXuLyTacGia.getdstg();
+            if (danhSachTG != null && danhSachTG.Any(x => x.Butdanh != null && x.Butdanh.ToLower() == ButDanh.ToLower() && x.MaTg != SelectedTacGia.MaTg))
+            {
+                MessageBox.Show("Bút danh này đã tồn tại! Vui lòng chọn bút danh khác.", "Cảnh báo");
+                return;
+            }
+
+            int namSinhInt = int.Parse(StrNamSinh);
+            TacGia update = new TacGia { MaTg = SelectedTacGia.MaTg, TenTg = Tentg, TieuSu = Tieusu, Butdanh = ButDanh, Namsinh = namSinhInt };
             if (CXuLyTacGia.suatg(update))
             {
                 ListTacGia = CXuLyTacGia.getdstg();
@@ -91,7 +139,7 @@ namespace QLTV_WPF.Models_API
 
         private void XoaTG_Execute(object p)
         {
-            if (MessageBox.Show("Xóa tác giả này?", "Cảnh báo", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("Xóa tác giả này?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 if (CXuLyTacGia.xoatg(SelectedTacGia.MaTg))
                 {
@@ -113,12 +161,15 @@ namespace QLTV_WPF.Models_API
                 ListTacGia = tatCaTacGia.Where(x => x.TenTg != null && x.TenTg.ToLower().Contains(TuKhoa.ToLower())).ToList();
             }
         }
+
         private void LamMoi()
         {
             Tentg = "";
+            ButDanh = "";
+            StrNamSinh = ""; 
             Tieusu = "";
             TuKhoa = "";
-            SelectedTacGia = null;
+            SelectedTacGia = null; 
             ListTacGia = CXuLyTacGia.getdstg();
         }
     }

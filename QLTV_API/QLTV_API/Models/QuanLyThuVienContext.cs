@@ -31,13 +31,11 @@ namespace QLTV_API.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-<<<<<<< HEAD
-                optionsBuilder.UseSqlServer("Data Source=LAPTOP-TH3M50VI;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=False");
+
+                optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
                // optionsBuilder.UseSqlServer("Data Source=DESKTOP-TBDFPUL\\SQLEXPRESS;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-=======
-                optionsBuilder.UseSqlServer("Data Source = EMTHAIXITIN; Initial Catalog = QuanLyThuVien; Integrated Security = True; Encrypt = False");
->>>>>>> 0ff4d1e01b0697585e98a333d4973424914d4c30
-               // optionsBuilder.UseSqlServer("Data Source=DESKTOP-TBDFPUL\\SQLEXPRESS;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
+
+               
             }
         }
 
