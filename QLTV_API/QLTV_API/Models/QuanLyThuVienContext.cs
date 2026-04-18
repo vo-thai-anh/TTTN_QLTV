@@ -31,11 +31,15 @@ namespace QLTV_API.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
+<<<<<<< HEAD
 
                 optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=False;Trust Server Certificate=True");
                // optionsBuilder.UseSqlServer("Data Source=DESKTOP-TBDFPUL\\SQLEXPRESS;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
                
+=======
+                optionsBuilder.UseSqlServer("Data Source = .\\SQLEXPRESS; Initial Catalog = QuanLyThuVien; Integrated Security = True; Encrypt = False");
+>>>>>>> b33dcda2eeb23ad1efe9d221dd1ced2aa6af0eed
             }
         }
 

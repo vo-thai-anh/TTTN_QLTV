@@ -1,6 +1,7 @@
 ﻿using QLTV_WPF.Models;
 using QLTV_WPF.Models_API;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace QLTV_WPF.ViewModels
@@ -10,13 +11,13 @@ namespace QLTV_WPF.ViewModels
         public NhanVienVM()
         {
             LoadData();
-            cmdThem = new RelayCommand(p => Them(), p => true);
+
+            cmdThem = new RelayCommand(p => Them(), p => SelectedNhanVien == null);
             cmdSua = new RelayCommand(p => Sua(), p => SelectedNhanVien != null);
             cmdXoa = new RelayCommand(p => Xoa(), p => SelectedNhanVien != null);
             cmdLamMoi = new RelayCommand(p => LamMoi());
             cmdSearch = new RelayCommand(p => Search());
         }
-
         public RelayCommand cmdThem { get; set; }
         public RelayCommand cmdSua { get; set; }
         public RelayCommand cmdXoa { get; set; }
@@ -52,10 +53,12 @@ namespace QLTV_WPF.ViewModels
                     Sdt = value.Sdt;
                     Email = value.Email;
                     ChucVu = value.ChucVu;
-                    MatKhau = value.MatKhau;
                     TaiKhoan = value.TaiKhoan;
+                    // KHI CHỌN NHÂN VIÊN ĐỂ SỬA, ĐỂ TRỐNG Ô MẬT KHẨU
+                    MatKhau = string.Empty;
                 }
                 NotifyPropertyChanged("SelectedNhanVien");
+                System.Windows.Input.CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -67,21 +70,42 @@ namespace QLTV_WPF.ViewModels
             ListNhanVien = CXuLyNhanVien.SearchNhanVien(Keyword);
         }
 
-        // HÀM KIỂM TRA CHUNG CHO CẢ THÊM VÀ SỬA
-        bool KiemTraNhapLieu()
+        bool KiemTraNhapLieu(bool isThem)
         {
-            if (string.IsNullOrWhiteSpace(HoTen) || string.IsNullOrWhiteSpace(TaiKhoan) ||
-                string.IsNullOrWhiteSpace(MatKhau) || string.IsNullOrWhiteSpace(ChucVu))
+            if (string.IsNullOrWhiteSpace(HoTen) || string.IsNullOrWhiteSpace(TaiKhoan) || string.IsNullOrWhiteSpace(ChucVu))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ các trường có dấu *!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng nhập đầy đủ các trường có dấu *.", "Thông báo");
                 return false;
             }
+
+            //Mật khẩu: Chỉ bắt buộc khi Thêm mới
+            if (isThem && string.IsNullOrWhiteSpace(MatKhau))
+            {
+                MessageBox.Show("Vui lòng nhập mật khẩu cho nhân viên mới!", "Thông báo");
+                return false;
+            }
+
+            // Họ tên: Không chứa ký tự lạ
+            string patternTen = @"^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵýỷỹ\s]+$";
+            if (!Regex.IsMatch(HoTen, patternTen))
+            {
+                MessageBox.Show("Họ tên không được chứa số hoặc ký tự đặc biệt!", "Thông báo");
+                return false;
+            }
+
+            //  SĐT: Đúng 10 số
+            if (!Regex.IsMatch(Sdt ?? "", @"^\d{10}$"))
+            {
+                MessageBox.Show("Số điện thoại phải đúng 10 số!", "Thông báo");
+                return false;
+            }
+
             return true;
         }
 
         void Them()
         {
-            if (!KiemTraNhapLieu()) return;
+            if (!KiemTraNhapLieu(true)) return;
 
             var nv = new NhanVien { MaNv = 0, HoTen = HoTen, Sdt = Sdt, Email = Email, ChucVu = ChucVu, MatKhau = MatKhau, TaiKhoan = TaiKhoan };
 
@@ -93,16 +117,41 @@ namespace QLTV_WPF.ViewModels
             }
             else
             {
-                MessageBox.Show("Thêm thất bại!", "Thông báo");
+                MessageBox.Show("Thêm thất bại!");
             }
         }
 
         void Sua()
         {
             if (SelectedNhanVien == null) return;
-            if (!KiemTraNhapLieu()) return; // Kiểm tra trống khi sửa
+            if (!KiemTraNhapLieu(false)) return;
 
-            var nv = new NhanVien { MaNv = SelectedNhanVien.MaNv, HoTen = HoTen, Sdt = Sdt, Email = Email, ChucVu = ChucVu, MatKhau = MatKhau, TaiKhoan = TaiKhoan };
+            // Kiểm tra xem Admin có thay đổi Tài khoản hoặc Mật khẩu không
+            bool isDoiTaiKhoan = TaiKhoan != SelectedNhanVien.TaiKhoan;
+            bool isDoiMatKhau = !string.IsNullOrWhiteSpace(MatKhau); 
+
+            if (isDoiTaiKhoan || isDoiMatKhau)
+            {
+                string noiDungCanhBao = "Bạn đang thay đổi thông tin đăng nhập:";
+                if (isDoiTaiKhoan) noiDungCanhBao += "\n- Tên đăng nhập";
+                if (isDoiMatKhau) noiDungCanhBao += "\n- Mật khẩu mới";
+                noiDungCanhBao += "\n\n Bạn có chắc chắn muốn thay đổi?";
+
+                var result = MessageBox.Show(noiDungCanhBao, "Xác nhận thay đổi",
+                                             MessageBoxButton.YesNo, MessageBoxImage.Warning);
+
+                if (result == MessageBoxResult.No) return;
+            }
+            var nv = new NhanVien
+            {
+                MaNv = SelectedNhanVien.MaNv,
+                HoTen = HoTen,
+                Sdt = Sdt,
+                Email = Email,
+                ChucVu = ChucVu,
+                MatKhau = MatKhau,
+                TaiKhoan = TaiKhoan
+            };
 
             if (CXuLyNhanVien.SuaNhanVien(nv))
             {
@@ -119,8 +168,26 @@ namespace QLTV_WPF.ViewModels
         void Xoa()
         {
             if (SelectedNhanVien == null) return;
-            if (MessageBox.Show("Xác nhận xóa nhân viên này?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                if (CXuLyNhanVien.XoaNhanVien(SelectedNhanVien.MaNv)) { LoadData(); LamMoi(); }
+
+            var result = MessageBox.Show($"Xác nhận xóa nhân viên: {SelectedNhanVien.HoTen}?",
+                                         "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                bool success = CXuLyNhanVien.XoaNhanVien(SelectedNhanVien.MaNv);
+
+                if (success)
+                {
+                    MessageBox.Show("Xóa thành công!", "Thông báo");
+                    LoadData();
+                    LamMoi();
+                }
+                else
+                {
+                    MessageBox.Show("Xóa thất bại! Nhân viên này đang cho mượn mượn sách.",
+                                    "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         void LamMoi()

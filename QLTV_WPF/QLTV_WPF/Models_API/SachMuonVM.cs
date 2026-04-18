@@ -67,7 +67,27 @@ namespace QLTV_WPF.Models_API
         public int? Masach
         {
             get { return m_masach; }
-            set { m_masach = value; NotifyPropertyChanged("Masach"); }
+            set
+            {
+                m_masach = value;
+                NotifyPropertyChanged("Masach");
+
+                // --- ĐOẠN CODE THÊM MỚI: LỌC DATAGRID TỰ ĐỘNG ---
+                if (value != null)
+                {
+                    // Nếu có một đầu sách được chọn, lấy toàn bộ kho và lọc ra đúng mã sách đó
+                    var toanBo = CXuLySachMuon.getdssachmuon();
+                    if (toanBo != null)
+                    {
+                        ListSachMuon = toanBo.Where(x => x.MaSach == value).ToList();
+                    }
+                }
+                else
+                {
+                    // Nếu không có mã nào (ví dụ khi người dùng bấm nút Làm Mới), hiển thị lại toàn bộ
+                    ListSachMuon = CXuLySachMuon.getdssachmuon();
+                }
+            }
         }
 
         private string m_tinhtrang;
