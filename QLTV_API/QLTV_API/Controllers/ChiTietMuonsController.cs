@@ -61,10 +61,7 @@ namespace QLTV_API.Controllers
             {
                 try
                 {
-                    // 1. Thêm Chi Tiết Mượn
                     _context.ChiTietMuons.Add(ct);
-                    
-                    // 2. Cập nhật Trạng Thái Sách = 1 (Đã mượn)
                     sachMuon.TrangThai = 1;
                     _context.Entry(sachMuon).State = EntityState.Modified;
 
