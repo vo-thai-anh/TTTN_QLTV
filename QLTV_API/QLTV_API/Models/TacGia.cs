@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Metadata;
 
 namespace QLTV_API.Models
 {
@@ -13,6 +14,8 @@ namespace QLTV_API.Models
         public int MaTg { get; set; }
         public string TenTg { get; set; } = null!;
         public string? TieuSu { get; set; }
+        public string? Butdanh { get; set; }
+        public int? Namsinh { get; set; }
 
         public virtual ICollection<Sach> MaSaches { get; set; }
     }

@@ -22,24 +22,10 @@ namespace QLTV_WPF.UI
     /// </summary>
     public partial class QL_TacGia : Window
     {
-        QuanLyThuVienContext db = new QuanLyThuVienContext();
-
         public QL_TacGia()
         {
             InitializeComponent();
-            DataContext = new TacGiaVM();
-        }
-
-        // Hàm tải dữ liệu từ Database
-
-        private void dgTacGia_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (dgTacGia.SelectedItem is TacGia selected)
-            {
-                txtMaTg.Text = selected.MaTg.ToString();
-                txtTenTg.Text = selected.TenTg;
-                txtTieuSu.Text = selected.TieuSu;
-            }
+            this.DataContext = new TacGiaVM();
         }
     }
 }

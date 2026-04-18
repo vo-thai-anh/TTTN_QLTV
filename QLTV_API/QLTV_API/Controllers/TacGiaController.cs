@@ -22,7 +22,9 @@ namespace QLTV_API.Controllers
                 {
                     matg = t.MaTg,
                     tentg = t.TenTg,
-                    tieusu = t.TieuSu
+                    tieusu = t.TieuSu,
+                    butdanh = t.Butdanh,
+                    namsinh = t.Namsinh,
                 }).ToList();
                 return Ok(kq);
             }
@@ -42,7 +44,9 @@ namespace QLTV_API.Controllers
                 TacGia a = new TacGia
                 {
                     TenTg = tg.TenTg,
-                    TieuSu = tg.TieuSu
+                    TieuSu = tg.TieuSu,
+                     Butdanh = tg.Butdanh,
+                    Namsinh = tg.Namsinh,
                 };
                 db.TacGia.Add(a);
                 db.SaveChanges();
@@ -62,6 +66,8 @@ namespace QLTV_API.Controllers
 
                 a.TenTg = tg.TenTg;
                 a.TieuSu = tg.TieuSu;
+                a.Butdanh = tg.Butdanh;
+                a.Namsinh = tg.Namsinh;
                 db.SaveChanges();
                 return Ok();
             }
