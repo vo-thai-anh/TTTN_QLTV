@@ -154,6 +154,26 @@ namespace QLTV_WPF.Models_API
         // Thêm Sách
         public void ThemSach_Execute(object parameter)
         {
+            // 1. Bắt buộc phải có Tên sách (Hàm IsNullOrWhiteSpace kiểm tra cả trường hợp người dùng gõ toàn dấu cách)
+            if (string.IsNullOrWhiteSpace(Tensach))
+            {
+                System.Windows.MessageBox.Show("Vui lòng nhập Tên sách!", "Cảnh báo", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return; // Lệnh return này sẽ bắt hàm dừng lại ngay lập tức, không chạy phần code thêm phía dưới nữa
+            }
+
+            // 2. Tùy chọn: Bắt buộc chọn Loại sách
+            if (Maloai == null)
+            {
+                System.Windows.MessageBox.Show("Vui lòng chọn Loại sách!", "Cảnh báo", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
+
+            // 3. Tùy chọn: Bắt buộc chọn Nhà xuất bản
+            if (Manxb == null)
+            {
+                System.Windows.MessageBox.Show("Vui lòng chọn Nhà xuất bản!", "Cảnh báo", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return;
+            }
             CSach moi = new CSach
             {
                 TenSach = this.Tensach,

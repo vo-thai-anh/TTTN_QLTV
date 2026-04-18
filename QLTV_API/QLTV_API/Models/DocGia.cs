@@ -10,6 +10,7 @@ namespace QLTV_API.Models
         public DocGia()
         {
             PhieuMuons = new HashSet<PhieuMuon>();
+            PhieuTras = new HashSet<PhieuTra>();
         }
 
         public int MaDocGia { get; set; }
@@ -22,8 +23,9 @@ namespace QLTV_API.Models
         public string? Email { get; set; }
 
         public string Sdt { get; set; }
-
+        [JsonIgnore]
         public virtual ICollection<PhieuMuon> PhieuMuons { get; set; }
-        public virtual ICollection<PhieuMuon>? PhieuTras { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<PhieuTra>? PhieuTras { get; set; }
     }
 }

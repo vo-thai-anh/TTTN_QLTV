@@ -1,6 +1,7 @@
 ﻿using QLTV_WPF.Models;
 using QLTV_WPF.Models_API;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Windows;
 
 namespace QLTV_WPF.ViewModels
@@ -10,19 +11,21 @@ namespace QLTV_WPF.ViewModels
         public DocGiaVM()
         {
             LoadData();
-            // Giữ nguyên p => true để nút luôn sáng giống NhanVien
-            cmdthem = new RelayCommand(p => Them(), p => true);
-            cmdsua = new RelayCommand(p => Sua(), p => SelectedDocGia != null);
-            cmdxoa = new RelayCommand(p => Xoa(), p => SelectedDocGia != null);
-            cmdlammoi = new RelayCommand(p => LamMoi());
-            cmdsearch = new RelayCommand(p => Search());
+
+            // Logic khóa nút: Chọn dòng thì khóa Thêm, Làm mới thì khóa Sửa/Xóa
+            cmdThem = new RelayCommand(p => Them(), p => SelectedDocGia == null);
+            cmdSua = new RelayCommand(p => Sua(), p => SelectedDocGia != null);
+            cmdXoa = new RelayCommand(p => Xoa(), p => SelectedDocGia != null);
+            cmdLamMoi = new RelayCommand(p => LamMoi());
+            cmdSearch = new RelayCommand(p => Search());
         }
 
-        public RelayCommand cmdthem { get; set; }
-        public RelayCommand cmdsua { get; set; }
-        public RelayCommand cmdxoa { get; set; }
-        public RelayCommand cmdlammoi { get; set; }
-        public RelayCommand cmdsearch { get; set; }
+        #region Properties & Commands
+        public RelayCommand cmdThem { get; set; }
+        public RelayCommand cmdSua { get; set; }
+        public RelayCommand cmdXoa { get; set; }
+        public RelayCommand cmdLamMoi { get; set; }
+        public RelayCommand cmdSearch { get; set; }
 
         private List<DocGia> _listDocGia;
         public List<DocGia> ListDocGia
@@ -53,25 +56,45 @@ namespace QLTV_WPF.ViewModels
                     DiaChi = value.DiaChi;
                 }
                 NotifyPropertyChanged("SelectedDocGia");
+                // Ép giao diện cập nhật trạng thái các nút bấm ngay lập tức
+                System.Windows.Input.CommandManager.InvalidateRequerySuggested();
             }
         }
+        #endregion
 
+        #region Methods
         void LoadData() => ListDocGia = CXuLyDocGia.getdsdg();
 
         void Search()
         {
             if (string.IsNullOrWhiteSpace(Keyword)) { LoadData(); return; }
-            ListDocGia = CXuLyDocGia.searchdg(Keyword);
+            ListDocGia = CXuLyDocGia.searchdg(Keyword.Trim());
         }
 
-        // Kiểm tra bỏ trống (Dấu *)
+        // HÀM KIỂM TRA NHẬP LIỆU CHUẨN
         bool KiemTraNhapLieu()
         {
-            if (string.IsNullOrWhiteSpace(HoTen))
+            if (string.IsNullOrWhiteSpace(HoTen) || string.IsNullOrWhiteSpace(Sdt))
             {
-                MessageBox.Show("Vui lòng nhập đầy đủ các trường có dấu *!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Vui lòng nhập đầy đủ các trường có dấu *.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }
+
+            // Regex Họ tên: Không số, không ký tự đặc biệt, hỗ trợ tiếng Việt
+            string patternTen = @"^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵýỷỹ\s]+$";
+            if (!Regex.IsMatch(HoTen.Trim(), patternTen))
+            {
+                MessageBox.Show("Họ tên không được chứa số hoặc ký tự!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            // Regex SĐT: Đúng 10 chữ số
+            if (!Regex.IsMatch(Sdt.Trim(), @"^\d{10}$"))
+            {
+                MessageBox.Show("Số điện thoại phải nhập đúng 10 số!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
             return true;
         }
 
@@ -79,38 +102,43 @@ namespace QLTV_WPF.ViewModels
         {
             if (!KiemTraNhapLieu()) return;
 
-            // CHỐT CHẶN: Nếu đang chọn một dòng trong bảng (Selected khác null)
-            // thì báo Thêm thất bại ngay, không gửi lên API để tránh trùng.
-            if (SelectedDocGia != null)
+            var dg = new DocGia
             {
-                MessageBox.Show("Thêm thất bại!", "Thông báo");
-                return;
-            }
-
-            var dg = new DocGia { MaDocGia = 0, HoTen = HoTen, Sdt = Sdt, Email = Email, DiaChi = DiaChi };
+                MaDocGia = 0,
+                HoTen = HoTen.Trim(),
+                Sdt = Sdt.Trim(),
+                Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim(),
+                DiaChi = DiaChi?.Trim()
+            };
 
             if (CXuLyDocGia.themdg(dg))
             {
-                MessageBox.Show("Thêm thành công!", "Thông báo");
+                MessageBox.Show("Thêm độc giả mới thành công!", "Thông báo");
                 LoadData();
                 LamMoi();
             }
             else
             {
-                MessageBox.Show("Thêm thất bại!", "Thông báo");
+                MessageBox.Show("Thêm thất bại!", "Lỗi");
             }
         }
 
         void Sua()
         {
-            if (SelectedDocGia == null) return;
-            if (!KiemTraNhapLieu()) return;
+            if (SelectedDocGia == null || !KiemTraNhapLieu()) return;
 
-            var dg = new DocGia { MaDocGia = SelectedDocGia.MaDocGia, HoTen = HoTen, Sdt = Sdt, Email = Email, DiaChi = DiaChi };
+            var dg = new DocGia
+            {
+                MaDocGia = SelectedDocGia.MaDocGia,
+                HoTen = HoTen.Trim(),
+                Sdt = Sdt.Trim(),
+                Email = string.IsNullOrWhiteSpace(Email) ? null : Email.Trim(),
+                DiaChi = DiaChi?.Trim()
+            };
 
             if (CXuLyDocGia.suadg(dg))
             {
-                MessageBox.Show("Cập nhật thành công!", "Thông báo");
+                MessageBox.Show("Cập nhật thông tin thành công!", "Thông báo");
                 LoadData();
                 LamMoi();
             }
@@ -123,8 +151,24 @@ namespace QLTV_WPF.ViewModels
         void Xoa()
         {
             if (SelectedDocGia == null) return;
-            if (MessageBox.Show("Xác nhận xóa độc giả này?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                if (CXuLyDocGia.xoadg(SelectedDocGia.MaDocGia)) { LoadData(); LamMoi(); }
+
+            var result = MessageBox.Show($"Xác nhận xóa độc giả: {SelectedDocGia.HoTen}?",
+                                         "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                if (CXuLyDocGia.xoadg(SelectedDocGia.MaDocGia))
+                {
+                    MessageBox.Show("Xóa thành công!", "Thông báo");
+                    LoadData();
+                    LamMoi();
+                }
+                else
+                {
+                    MessageBox.Show("Không thể xóa độc giả này!",
+                                    "Xóa thất bại", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
         }
 
         void LamMoi()
@@ -133,5 +177,6 @@ namespace QLTV_WPF.ViewModels
             SelectedDocGia = null;
             LoadData();
         }
+        #endregion
     }
 }

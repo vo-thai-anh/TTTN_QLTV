@@ -13,9 +13,9 @@ namespace QLTV_WPF.Models
 
         public int MaNv { get; set; }
         public string HoTen { get; set; } = null!;
-        public string? ChucVu { get; set; }
-        public string? TaiKhoan { get; set; }
-        public string? MatKhau { get; set; }
+        public string ChucVu { get; set; }
+        public string TaiKhoan { get; set; }
+        public string MatKhau { get; set; }
         public string? Email { get; set; }
         public string? Sdt { get; set; }
 
