@@ -33,6 +33,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <TextBlock Text="Mã phiếu mượn:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
@@ -66,6 +67,30 @@
                 <TextBlock Text="Ghi chú:" Grid.Row="2" Grid.Column="2" VerticalAlignment="Center" FontWeight="SemiBold" Margin="10,0,0,0"/>
                 <TextBox Grid.Row="2" Grid.Column="3" Height="30" Margin="5" VerticalContentAlignment="Center"
                          Text="{Binding GhiChu, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!-- Ô tìm kiếm tự động -->
+                <TextBlock Text="Tìm kiếm:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" FontWeight="SemiBold" Margin="5"/>
+                <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="5">
+                    <TextBox Height="30" VerticalContentAlignment="Center" Padding="5,0"
+                             Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Text="🔎  Nhập mã phiếu, tên nhân viên, tên độc giả hoặc ghi chú..."
+                               VerticalAlignment="Center" Margin="7,0,0,0"
+                               Foreground="#AAAAAA" FontStyle="Italic" IsHitTestVisible="False">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Keyword}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Keyword}" Value="{x:Null}">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </Grid>
             </Grid>
         </Border>
 

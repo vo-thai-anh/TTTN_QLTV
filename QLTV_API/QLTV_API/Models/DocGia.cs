@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace QLTV_API.Models
@@ -10,7 +11,6 @@ namespace QLTV_API.Models
         public DocGia()
         {
             PhieuMuons = new HashSet<PhieuMuon>();
-            PhieuTras = new HashSet<PhieuTra>();
         }
 
         public int MaDocGia { get; set; }
@@ -19,12 +19,16 @@ namespace QLTV_API.Models
 
         public string? DiaChi { get; set; }
 
-        
         public string? Email { get; set; }
 
         public string Sdt { get; set; }
+
         [JsonIgnore]
         public virtual ICollection<PhieuMuon> PhieuMuons { get; set; }
+
+        // PhieuTra không có FK trực tiếp đến DocGia trong DB
+        // → đánh dấu NotMapped để EF Core không tạo shadow property 'DocGiaMaDocGia'
+        [NotMapped]
         [JsonIgnore]
         public virtual ICollection<PhieuTra>? PhieuTras { get; set; }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 namespace QLTV_API.Models
@@ -12,6 +12,7 @@ namespace QLTV_API.Models
         public string? LyDoPhat { get; set; }
         public int? MaPhieuTra { get; set; }
 
+        [JsonIgnore]
         public virtual PhieuMuon MaPhieuMuonNavigation { get; set; } = null!;
         [JsonIgnore]
         public virtual PhieuTra? MaPhieuTraNavigation { get; set; }

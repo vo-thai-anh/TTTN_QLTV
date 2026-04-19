@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -21,7 +21,9 @@ namespace QLTV_API.Models
         public int? MaNxb { get; set; }
         public int? MaLoai { get; set; }
 
+        [JsonIgnore]
         public virtual LoaiSach? MaLoaiNavigation { get; set; }
+        [JsonIgnore]
         public virtual NhaXuatBan? MaNxbNavigation { get; set; }
 
         [JsonIgnore]

@@ -127,7 +127,7 @@ namespace QLTV_WPF.ViewModels
         public DateTime? NgayMuon { get => _ngayMuon; set { _ngayMuon = value; NotifyPropertyChanged("NgayMuon"); } }
         public DateTime? NgayTra { get => _ngayTra; set { _ngayTra = value; NotifyPropertyChanged("NgayTra"); } }
         public string GhiChu { get => _ghiChu; set { _ghiChu = value; NotifyPropertyChanged("GhiChu"); } }
-        public string Keyword { get => _keyword; set { _keyword = value; NotifyPropertyChanged("Keyword"); } }
+        public string Keyword { get => _keyword; set { _keyword = value; NotifyPropertyChanged("Keyword"); Search(); } }
 
         private PhieuMuon _selected;
         public PhieuMuon Selected
@@ -171,8 +171,25 @@ namespace QLTV_WPF.ViewModels
         void Search()
         {
             if (string.IsNullOrWhiteSpace(Keyword)) { LoadData(); return; }
-            List = CXuLyPhieuMuon.search(Keyword);
-            BuildListHienThi();
+
+            // Tìm client-side theo: Mã phiếu, Tên NV, Tên độc giả, Ghi chú
+            var lower = Keyword.Trim().ToLower();
+            ListHienThi = (List ?? new List<PhieuMuon>())
+                .Where(pm =>
+                    pm.MaPhieuMuon.ToString().Contains(lower) ||
+                    (pm.GhiChu != null && pm.GhiChu.ToLower().Contains(lower)) ||
+                    (ListNhanVien?.FirstOrDefault(nv => nv.MaNv == pm.MaNhanVien)?.HoTen?.ToLower().Contains(lower) == true) ||
+                    (ListDocGia?.FirstOrDefault(dg => dg.MaDocGia == pm.MaDocGia)?.HoTen?.ToLower().Contains(lower) == true)
+                )
+                .Select(pm => new PhieuMuonHienThi
+                {
+                    MaPhieuMuon = pm.MaPhieuMuon,
+                    TenNhanVien = ListNhanVien?.FirstOrDefault(nv => nv.MaNv == pm.MaNhanVien)?.HoTen ?? pm.MaNhanVien?.ToString(),
+                    TenDocGia   = ListDocGia?.FirstOrDefault(dg => dg.MaDocGia == pm.MaDocGia)?.HoTen ?? pm.MaDocGia?.ToString(),
+                    NgayMuon    = pm.NgayMuon,
+                    NgayTra     = pm.NgayTra,
+                    GhiChu      = pm.GhiChu
+                }).ToList();
         }
 
         bool KiemTra()
