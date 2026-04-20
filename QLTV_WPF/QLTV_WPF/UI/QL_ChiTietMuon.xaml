@@ -56,19 +56,19 @@
 
             <Button Content="➕ Quét thêm (Enter)" Width="150" Height="35" Margin="5"
                     Background="#27AE60" Foreground="White" FontWeight="Bold" IsDefault="True"
-                    Command="{Binding cmdThemCT}"/>
+                    Command="{Binding cmdQuetThem}"/>
 
             <Button Content="📥 Nhận trả sách" Width="130" Height="35" Margin="5"
                     Background="#F39C12" Foreground="White" FontWeight="Bold"
-                    Command="{Binding cmdSuaCT}"/>
+                    Command="{Binding cmdNhanTraSach}"/>
 
             <Button Content="🗑 Xóa nhầm" Width="110" Height="35" Margin="5"
                     Background="#E74C3C" Foreground="White" FontWeight="Bold"
-                    Command="{Binding cmdXoaCT}"/>
+                    Command="{Binding cmdXoaNham}"/>
 
             <Button Content="🔄 Làm mới" Width="110" Height="35" Margin="5"
                     Background="#3498DB" Foreground="White" FontWeight="Bold"
-                    Command="{Binding cmdLamMoiCT}"/>
+                    Command="{Binding cmdLamMoi}"/>
         </StackPanel>
 
         <DataGrid Grid.Row="3"

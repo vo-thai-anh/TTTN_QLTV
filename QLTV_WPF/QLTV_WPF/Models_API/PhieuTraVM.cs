@@ -4,12 +4,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.ComponentModel;
-using System.Windows.Data;
 
 namespace QLTV_WPF.ViewModels
 {
-    // DTO để hiển thị tên nhân viên trong DataGrid thay vì mã số
+    // Class phụ để tạo cột Checkbox và xử lý trả từng cuốn
+    class ItemThuHoi : CBaseMVVM
+    {
+        private bool _isChon;
+        public bool IsChon { get => _isChon; set { _isChon = value; NotifyPropertyChanged("IsChon"); } }
+
+        public ChiTietMuon ChiTietGoc { get; set; }
+
+        private decimal? _tienPhat = 0;
+        public decimal? TienPhat { get => _tienPhat; set { _tienPhat = value; NotifyPropertyChanged("TienPhat"); } }
+
+        private string _lyDoPhat = "";
+        public string LyDoPhat { get => _lyDoPhat; set { _lyDoPhat = value; NotifyPropertyChanged("LyDoPhat"); } }
+    }
+
     public class PhieuTraHienThi
     {
         public int MaPhieuTra { get; set; }
@@ -21,106 +33,56 @@ namespace QLTV_WPF.ViewModels
 
     class PhieuTraVM : CBaseMVVM
     {
-        public PhieuTraVM()
+        public PhieuTraVM(int maPhieuMuonGoiY = 0)
         {
-            // 1. Load danh sách nhân viên cho ComboBox
             ListNhanVien = CXuLyNhanVien.GetDsNhanVien();
+            LoadData(); // Tải lịch sử ngay khi mở máy
 
-            // 2. Load dữ liệu phiếu trả
-            LoadData();
-
-            // 3. Khởi tạo commands
-            cmdthem    = new RelayCommand(p => Them(), p => true);
-            cmdsua     = new RelayCommand(p => Sua(),  p => SelectedPhieuTra != null);
-            cmdxoa     = new RelayCommand(p => Xoa(),  p => SelectedPhieuTra != null);
-            cmdlammoi  = new RelayCommand(p => LamMoi());
-            cmdsearch  = new RelayCommand(p => Search());
+            cmdlammoi = new RelayCommand(p => LamMoi());
+            cmdsearch = new RelayCommand(p => Search());
+            cmdTimSachNo = new RelayCommand(p => TimSachNo());
+            cmdChotTraSach = new RelayCommand(p => ChotTraSach(), p => ListSachNo != null && ListSachNo.Any(x => x.IsChon));
+            if (maPhieuMuonGoiY > 0)
+            {
+                MaPhieuMuonTimKiem = maPhieuMuonGoiY;
+                TimSachNo();
+            }
         }
 
-        // ── Commands ──────────────────────────────────────────────────────────
-        public RelayCommand cmdthem   { get; set; }
-        public RelayCommand cmdsua    { get; set; }
-        public RelayCommand cmdxoa    { get; set; }
+        #region PROPERTIES LỊCH SỬ (TAB 2)
         public RelayCommand cmdlammoi { get; set; }
         public RelayCommand cmdsearch { get; set; }
 
-        // ── Danh sách gốc (để Sửa/Xóa) ───────────────────────────────────────
         private List<PhieuTra> _list;
-        public List<PhieuTra> List
-        {
-            get => _list;
-            set { _list = value; NotifyPropertyChanged("List"); }
-        }
+        public List<PhieuTra> List { get => _list; set { _list = value; NotifyPropertyChanged("List"); } }
 
-        // ── Danh sách hiển thị (DataGrid) ────────────────────────────────────
         private List<PhieuTraHienThi> _listHienThi;
-        public List<PhieuTraHienThi> ListHienThi
-        {
-            get => _listHienThi;
-            set { _listHienThi = value; NotifyPropertyChanged("ListHienThi"); }
-        }
+        public List<PhieuTraHienThi> ListHienThi { get => _listHienThi; set { _listHienThi = value; NotifyPropertyChanged("ListHienThi"); } }
 
-        // ── Danh sách nhân viên cho ComboBox ─────────────────────────────────
+        private string _keyword;
+        public string Keyword { get => _keyword; set { _keyword = value; NotifyPropertyChanged("Keyword"); Search(); } }
+        #endregion
+
+        #region PROPERTIES NGHIỆP VỤ TRẢ SÁCH (TAB 1)
+        public RelayCommand cmdTimSachNo { get; set; }
+        public RelayCommand cmdChotTraSach { get; set; }
+
+        private int _maPhieuMuonTimKiem;
+        public int MaPhieuMuonTimKiem { get => _maPhieuMuonTimKiem; set { _maPhieuMuonTimKiem = value; NotifyPropertyChanged("MaPhieuMuonTimKiem"); } }
+
+        private List<ItemThuHoi> _listSachNo;
+        public List<ItemThuHoi> ListSachNo { get => _listSachNo; set { _listSachNo = value; NotifyPropertyChanged("ListSachNo"); } }
+
         private List<NhanVien> _listNhanVien;
-        public List<NhanVien> ListNhanVien
-        {
-            get => _listNhanVien;
-            set { _listNhanVien = value; NotifyPropertyChanged("ListNhanVien"); }
-        }
+        public List<NhanVien> ListNhanVien { get => _listNhanVien; set { _listNhanVien = value; NotifyPropertyChanged("ListNhanVien"); } }
 
-        // ── Item được chọn trong DataGrid (DTO hiển thị) ─────────────────────
-        private PhieuTraHienThi _selectedHienThi;
-        public PhieuTraHienThi SelectedHienThi
-        {
-            get => _selectedHienThi;
-            set
-            {
-                _selectedHienThi = value;
-                NotifyPropertyChanged("SelectedHienThi");
+        private int? _maNhanVien;
+        public int? MaNhanVien { get => _maNhanVien; set { _maNhanVien = value; NotifyPropertyChanged("MaNhanVien"); } }
 
-                // Đồng bộ về PhieuTra gốc để dùng cho Sửa/Xóa
-                if (value != null)
-                    SelectedPhieuTra = List?.FirstOrDefault(pt => pt.MaPhieuTra == value.MaPhieuTra);
-                else
-                    SelectedPhieuTra = null;
-            }
-        }
+        private string _ghiChu;
+        public string GhiChu { get => _ghiChu; set { _ghiChu = value; NotifyPropertyChanged("GhiChu"); } }
+        #endregion
 
-        // ── PhieuTra gốc được chọn (dùng cho Sửa/Xóa & điền form) ───────────
-        private PhieuTra _selectedPhieuTra;
-        public PhieuTra SelectedPhieuTra
-        {
-            get => _selectedPhieuTra;
-            set
-            {
-                _selectedPhieuTra = value;
-                NotifyPropertyChanged("SelectedPhieuTra");
-
-                // Tự điền form khi chọn hàng
-                if (value != null)
-                {
-                    MaNhanVien    = value.MaNhanVien;
-                    NgayTra       = value.NgayTra;
-                    TongTienPhat  = value.TongTienPhat;
-                    GhiChu        = value.GhiChu;
-                }
-            }
-        }
-
-        // ── Các trường nhập liệu ──────────────────────────────────────────────
-        private int?      _maNhanVien;
-        private DateTime? _ngayTra    = DateTime.Now;
-        private decimal?  _tongTienPhat;
-        private string    _ghiChu;
-        private string    _keyword;
-
-        public int?      MaNhanVien   { get => _maNhanVien;   set { _maNhanVien   = value; NotifyPropertyChanged("MaNhanVien");   } }
-        public DateTime? NgayTra      { get => _ngayTra;      set { _ngayTra      = value; NotifyPropertyChanged("NgayTra");      } }
-        public decimal?  TongTienPhat { get => _tongTienPhat; set { _tongTienPhat = value; NotifyPropertyChanged("TongTienPhat"); } }
-        public string    GhiChu       { get => _ghiChu;       set { _ghiChu       = value; NotifyPropertyChanged("GhiChu");       } }
-        public string    Keyword      { get => _keyword;      set { _keyword      = value; NotifyPropertyChanged("Keyword"); Search(); } }
-
-        // ── Load & Build ──────────────────────────────────────────────────────
         void LoadData()
         {
             List = CXuLyPhieuTra.getds();
@@ -132,147 +94,98 @@ namespace QLTV_WPF.ViewModels
             if (List == null) return;
             ListHienThi = List.Select(pt => new PhieuTraHienThi
             {
-                MaPhieuTra   = pt.MaPhieuTra,
-                TenNhanVien  = ListNhanVien?.FirstOrDefault(nv => nv.MaNv == pt.MaNhanVien)?.HoTen
-                               ?? pt.MaNhanVien?.ToString(),
-                NgayTra      = pt.NgayTra,
+                MaPhieuTra = pt.MaPhieuTra,
+                TenNhanVien = ListNhanVien?.FirstOrDefault(nv => nv.MaNv == pt.MaNhanVien)?.HoTen ?? pt.MaNhanVien?.ToString(),
+                NgayTra = pt.NgayTra,
                 TongTienPhat = pt.TongTienPhat,
-                GhiChu       = pt.GhiChu
+                GhiChu = pt.GhiChu
             }).ToList();
         }
 
         void Search()
         {
             if (string.IsNullOrWhiteSpace(Keyword)) { LoadData(); return; }
-
-            // Tìm theo: Mã phiếu trả, Tên nhân viên, hoặc Ghi chú
             var lower = Keyword.Trim().ToLower();
-            ListHienThi = (List ?? new List<PhieuTra>())
-                .Where(pt =>
-                    pt.MaPhieuTra.ToString().Contains(lower) ||
-                    (pt.GhiChu != null && pt.GhiChu.ToLower().Contains(lower)) ||
-                    (ListNhanVien?.FirstOrDefault(nv => nv.MaNv == pt.MaNhanVien)?.HoTen?.ToLower().Contains(lower) == true)
-                )
-                .Select(pt => new PhieuTraHienThi
-                {
-                    MaPhieuTra   = pt.MaPhieuTra,
-                    TenNhanVien  = ListNhanVien?.FirstOrDefault(nv => nv.MaNv == pt.MaNhanVien)?.HoTen ?? pt.MaNhanVien?.ToString(),
-                    NgayTra      = pt.NgayTra,
-                    TongTienPhat = pt.TongTienPhat,
-                    GhiChu       = pt.GhiChu
-                }).ToList();
+            ListHienThi = ListHienThi.Where(x => x.MaPhieuTra.ToString().Contains(lower) || (x.GhiChu != null && x.GhiChu.ToLower().Contains(lower))).ToList();
         }
 
-        bool KiemTra()
+        void TimSachNo()
         {
-            if (MaNhanVien == null)
-            {
-                MessageBox.Show("Vui lòng chọn Nhân viên!", "Thông báo");
-                return false;
-            }
-            if (NgayTra == null)
-            {
-                MessageBox.Show("Vui lòng nhập Ngày trả!", "Thông báo");
-                return false;
-            }
-            return true;
-        }
+            if (MaPhieuMuonTimKiem <= 0) return;
 
-        void Them()
-        {
-            if (!KiemTra()) return;
-
-            // Khi thêm mới, không được có record đang chọn
-            if (SelectedPhieuTra != null)
+            // 1. TÌM PHIẾU MƯỢN GỐC ĐỂ BIẾT HẠN TRẢ
+            var phieuMuonGoc = CXuLyPhieuMuon.getds().FirstOrDefault(p => p.MaPhieuMuon == MaPhieuMuonTimKiem);
+            if (phieuMuonGoc == null)
             {
-                MessageBox.Show("Đang ở chế độ sửa. Nhấn 'Làm mới' trước khi thêm!", "Thông báo");
+                MessageBox.Show("Mã phiếu mượn không tồn tại!", "Lỗi");
                 return;
             }
 
-            var pt = new PhieuTra
-            {
-                MaPhieuTra   = 0,
-                MaNhanVien   = MaNhanVien,
-                NgayTra      = NgayTra,
-                TongTienPhat = TongTienPhat,
-                GhiChu       = GhiChu
-            };
+            var tatCaChiTiet = CXulyChiTietMuon.getByPhieuMuon(MaPhieuMuonTimKiem);
+            var danhSachChuaTra = tatCaChiTiet.Where(x => x.NgayTraThucTe == null).ToList();
 
-            if (CXuLyPhieuTra.them(pt))
+            if (danhSachChuaTra.Count == 0)
             {
-                MessageBox.Show("Thêm phiếu trả thành công!", "Thông báo");
-                LoadData();
-                LamMoi();
+                MessageBox.Show("Phiếu mượn này không có sách nào đang nợ!", "Thông báo");
+                ListSachNo = null;
+                return;
             }
-            else
+
+            // 2. DUYỆT TỪNG CUỐN VÀ TỰ TÍNH TIỀN PHẠT
+            var listTam = new List<ItemThuHoi>();
+            foreach (var ct in danhSachChuaTra)
             {
-                MessageBox.Show("Thêm thất bại! Kiểm tra lại kết nối hoặc dữ liệu.", "Thông báo");
-            }
-        }
+                decimal tienPhatGoiY = 0;
+                string lyDoGoiY = "";
 
-        void Sua()
-        {
-            if (SelectedPhieuTra == null) return;
-            if (!KiemTra()) return;
-
-            var pt = new PhieuTra
-            {
-                MaPhieuTra   = SelectedPhieuTra.MaPhieuTra,
-                MaNhanVien   = MaNhanVien,
-                NgayTra      = NgayTra,
-                TongTienPhat = TongTienPhat,
-                GhiChu       = GhiChu
-            };
-
-            if (CXuLyPhieuTra.sua(pt))
-            {
-                MessageBox.Show("Cập nhật thành công!", "Thông báo");
-                LoadData();
-                LamMoi();
-            }
-            else
-            {
-                MessageBox.Show("Cập nhật thất bại!", "Thông báo");
-            }
-        }
-
-        void Xoa()
-        {
-            if (SelectedPhieuTra == null) return;
-
-            var result = MessageBox.Show(
-                $"Xác nhận xóa phiếu trả #{SelectedPhieuTra.MaPhieuTra}?",
-                "Xác nhận xóa",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result == MessageBoxResult.Yes)
-            {
-                if (CXuLyPhieuTra.xoa(SelectedPhieuTra.MaPhieuTra))
+                // Kiểm tra xem có hạn trả chưa, và ngày hôm nay đã vượt quá hạn trả chưa (chỉ tính theo ngày, bỏ qua giờ giấc)
+                if (phieuMuonGoc.NgayTra.HasValue && DateTime.Now.Date > phieuMuonGoc.NgayTra.Value.Date)
                 {
-                    MessageBox.Show("Xóa thành công!", "Thông báo");
-                    LoadData();
-                    LamMoi();
+                    // Tính số ngày trễ
+                    int soNgayTre = (DateTime.Now.Date - phieuMuonGoc.NgayTra.Value.Date).Days;
+
+                    // Giả sử quy định phạt 5.000đ / ngày trễ (Bạn có thể đổi số 5000 này theo ý muốn)
+                    tienPhatGoiY = soNgayTre * 5000;
+                    lyDoGoiY = $"Trễ hạn {soNgayTre} ngày";
                 }
-                else
+
+                listTam.Add(new ItemThuHoi
                 {
-                    MessageBox.Show("Xóa thất bại! Phiếu trả này có thể đang được sử dụng.", "Thông báo");
+                    IsChon = false, // Để thủ thư tự tick
+                    ChiTietGoc = ct,
+                    TienPhat = tienPhatGoiY,
+                    LyDoPhat = lyDoGoiY
+                });
+            }
+
+            // Đẩy ra giao diện
+            ListSachNo = listTam;
+        }
+
+        void ChotTraSach()
+        {
+            if (MaNhanVien == null) { MessageBox.Show("Vui lòng chọn Nhân viên thu hồi!"); return; }
+            var dsSelected = ListSachNo.Where(x => x.IsChon).ToList();
+            decimal tongPhat = dsSelected.Sum(x => x.TienPhat ?? 0);
+
+            // 1. Tạo Phiếu Trả
+            var phieuMoi = CXuLyPhieuTra.themVoiKetQua(new PhieuTra { MaNhanVien = MaNhanVien, NgayTra = DateTime.Now, TongTienPhat = tongPhat, GhiChu = GhiChu });
+            if (phieuMoi != null)
+            {
+                // 2. Cập nhật từng cuốn sách
+                foreach (var item in dsSelected)
+                {
+                    item.ChiTietGoc.NgayTraThucTe = DateTime.Now;
+                    item.ChiTietGoc.TienPhat = item.TienPhat;
+                    item.ChiTietGoc.LyDoPhat = item.LyDoPhat;
+                    item.ChiTietGoc.MaPhieuTra = phieuMoi.MaPhieuTra;
+                    CXulyChiTietMuon.sua(item.ChiTietGoc);
                 }
+                MessageBox.Show("Thu hồi sách và lập phiếu trả thành công!");
+                LamMoi(); LoadData();
             }
         }
 
-        void LamMoi()
-        {
-            MaNhanVien        = null;
-            NgayTra           = DateTime.Now;
-            TongTienPhat      = null;
-            GhiChu            = string.Empty;
-            Keyword           = string.Empty;
-            // Xóa selection KHÔNG trigger setter SelectedPhieuTra để tránh vòng lặp
-            _selectedPhieuTra = null;
-            NotifyPropertyChanged("SelectedPhieuTra");
-            _selectedHienThi  = null;
-            NotifyPropertyChanged("SelectedHienThi");
-        }
+        void LamMoi() { MaNhanVien = null; GhiChu = ""; MaPhieuMuonTimKiem = 0; ListSachNo = null; Keyword = ""; LoadData(); }
     }
 }

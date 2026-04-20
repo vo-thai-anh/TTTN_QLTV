@@ -61,6 +61,38 @@ namespace QLTV_WPF.Models_API
             }
         }
 
+        public static PhieuTra themVoiKetQua(PhieuTra pt)
+        {
+            try
+            {
+                pt.MaNhanVienNavigation = null;
+                pt.ChiTietMuons?.Clear();
+
+                using (HttpClient hc = new HttpClient())
+                {
+                    hc.Timeout = TimeSpan.FromSeconds(10);
+                    var kq = hc.PostAsJsonAsync(strurl, pt);
+                    kq.Wait();
+
+                    if (kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode)
+                    {
+                        var phieuMoi = kq.Result.Content.ReadFromJsonAsync<PhieuTra>();
+                        phieuMoi.Wait();
+                        return phieuMoi.Result;
+                    }
+
+                    var errMsg = kq.Result.Content.ReadAsStringAsync().Result;
+                    MessageBox.Show($"API trả về lỗi: {errMsg}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi kết nối:\n{ex.InnerException?.Message ?? ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return null;
+            }
+        }
+
         public static bool sua(PhieuTra pt)
         {
             try

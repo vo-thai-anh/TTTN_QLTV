@@ -3,14 +3,12 @@ using QLTV_WPF.Models_API;
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Linq;
 
 namespace QLTV_WPF.ViewModels
 {
     class ChiTietMuonVM : CBaseMVVM
     {
         private int _maPhieuHienTai;
-        private DateTime? _hanTraCuaPhieu; // Lưu hạn trả để tính tiền phạt
 
         public ChiTietMuonVM(int maPhieu)
         {
@@ -18,36 +16,33 @@ namespace QLTV_WPF.ViewModels
             MaPhieuMuon = maPhieu;
 
             LoadData();
-            LayThongTinHanTra(); // Lấy hạn trả từ phiếu mượn gốc
 
-            // Chỉ cho phép bấm "Thêm" khi đang mở một phiếu cụ thể
-            cmdThemCT = new RelayCommand(p => Them(), p => true);
-            cmdSuaCT = new RelayCommand(p => Sua(), p => Selected != null);
-            cmdXoaCT = new RelayCommand(p => Xoa(), p => Selected != null);
-            cmdLamMoiCT = new RelayCommand(p => LamMoi());
+            // TÊN COMMAND ĐÃ ĐƯỢC CHUẨN HÓA THEO ĐÚNG NÚT BẤM TRÊN UI
+            cmdQuetThem = new RelayCommand(p => QuetThemSach(), p => true);
+            cmdNhanTraSach = new RelayCommand(p => MoGiaoDienTraSach(), p => _maPhieuHienTai > 0); // Luôn sáng
+            cmdXoaNham = new RelayCommand(p => XoaSachLoi(), p => Selected != null);
+            cmdLamMoi = new RelayCommand(p => LamMoiData());
         }
 
-        #region Properties (Khai báo biến)
-        public RelayCommand cmdThemCT { get; set; }
-        public RelayCommand cmdSuaCT { get; set; }
-        public RelayCommand cmdXoaCT { get; set; }
-        public RelayCommand cmdLamMoiCT { get; set; }
+        #region Properties (Biến giao diện)
+        public RelayCommand cmdQuetThem { get; set; }
+        public RelayCommand cmdNhanTraSach { get; set; }
+        public RelayCommand cmdXoaNham { get; set; }
+        public RelayCommand cmdLamMoi { get; set; }
 
         private List<ChiTietMuon> _list;
         public List<ChiTietMuon> List { get => _list; set { _list = value; NotifyPropertyChanged("List"); } }
 
         private int _maPhieuMuon;
-        private int? _maSachMuon;
-        public int? MaSachMuon
-        {
-            get => _maSachMuon;
-            set { _maSachMuon = value; NotifyPropertyChanged("MaSachMuon"); }
-        }
-        private string _lyDoPhat;
-        private decimal? _tienPhat;
-
         public int MaPhieuMuon { get => _maPhieuMuon; set { _maPhieuMuon = value; NotifyPropertyChanged("MaPhieuMuon"); } }
+
+        private int? _maSachMuon;
+        public int? MaSachMuon { get => _maSachMuon; set { _maSachMuon = value; NotifyPropertyChanged("MaSachMuon"); } }
+
+        private string _lyDoPhat;
         public string LyDoPhat { get => _lyDoPhat; set { _lyDoPhat = value; NotifyPropertyChanged("LyDoPhat"); } }
+
+        private decimal? _tienPhat;
         public decimal? TienPhat { get => _tienPhat; set { _tienPhat = value; NotifyPropertyChanged("TienPhat"); } }
 
         private ChiTietMuon _selected;
@@ -62,9 +57,7 @@ namespace QLTV_WPF.ViewModels
                     MaSachMuon = value.MaSachMuon;
                     LyDoPhat = value.LyDoPhat;
                     TienPhat = value.TienPhat;
-
-                    // Nếu là sách chưa trả, tự tính tiền phạt gợi ý
-                    if (value.NgayTraThucTe == null) TinhTienPhatGoiY();
+                    // Đã xóa phần tự tính tiền phạt vì chức năng đó đã chuyển sang form Phiếu Trả
                 }
                 NotifyPropertyChanged("Selected");
             }
@@ -73,7 +66,6 @@ namespace QLTV_WPF.ViewModels
 
         #region Logic Xử Lý (Methods)
 
-        // 1. Lọc dữ liệu: Chỉ hiện sách của phiếu đang chọn
         void LoadData()
         {
             if (_maPhieuHienTai > 0)
@@ -82,29 +74,8 @@ namespace QLTV_WPF.ViewModels
                 List = CXulyChiTietMuon.getds();
         }
 
-        // 2. Lấy hạn trả của phiếu mượn này để tính phạt
-        void LayThongTinHanTra()
-        {
-            if (_maPhieuHienTai <= 0) return;
-            var phieu = CXuLyPhieuMuon.getds().FirstOrDefault(x => x.MaPhieuMuon == _maPhieuHienTai);
-            _hanTraCuaPhieu = phieu?.NgayTra;
-        }
-
-        // 3. Tự động tính tiền phạt (ví dụ 5.000đ / ngày quá hạn)
-        void TinhTienPhatGoiY()
-        {
-            if (_hanTraCuaPhieu == null || DateTime.Now <= _hanTraCuaPhieu)
-            {
-                TienPhat = 0; LyDoPhat = "Trả đúng hạn";
-                return;
-            }
-            int soNgayTre = (DateTime.Now - _hanTraCuaPhieu.Value).Days;
-            TienPhat = soNgayTre * 5000;
-            LyDoPhat = $"Trễ {soNgayTre} ngày";
-        }
-
-        // 4. MƯỢN SÁCH (Thêm vào phiếu)
-        void Them()
+        // Đã đổi tên từ Them() thành QuetThemSach()
+        void QuetThemSach()
         {
             if (MaSachMuon == null || MaSachMuon <= 0)
             {
@@ -116,49 +87,40 @@ namespace QLTV_WPF.ViewModels
 
             var ct = new ChiTietMuon { MaPhieuMuon = _maPhieuHienTai, MaSachMuon = MaSachMuon.Value };
 
-            // Bỏ nhánh else đi, nếu true thì load lại data, false thì CXulyChiTietMuon tự báo lỗi
             if (CXulyChiTietMuon.them(ct))
             {
                 LoadData();
-                LamMoi();
+                LamMoiData();
             }
         }
 
-        // 5. TRẢ SÁCH (Sửa chi tiết)
-        void Sua()
+        // Đã đổi tên từ Sua() thành MoGiaoDienTraSach() và cập nhật logic chuyển trang
+        void MoGiaoDienTraSach()
         {
-            if (Selected == null) return;
-            var ct = new ChiTietMuon
-            {
-                MaPhieuMuon = Selected.MaPhieuMuon,
-                MaSachMuon = Selected.MaSachMuon,
-                NgayTraThucTe = DateTime.Now,
-                TienPhat = TienPhat,
-                LyDoPhat = LyDoPhat,
-                MaPhieuTra = 1 // Tạm thời gắn vào phiếu trả số 1
-            };
+            if (_maPhieuHienTai <= 0) return;
 
-            if (CXulyChiTietMuon.sua(ct))
-            {
-                MessageBox.Show("Đã thu hồi sách về kho thành công!");
-                LoadData();
-                LamMoi();
-            }
+            // Chuyển thẳng sang trang All-in-One và ném mã phiếu mượn qua
+            var windowTra = new UI.QL_PhieuTra(_maPhieuHienTai);
+            windowTra.ShowDialog();
+
+            LoadData(); // Cập nhật lại giỏ hàng sau khi trả sách xong
         }
 
-        void Xoa()
+        // Đã đổi tên từ Xoa() thành XoaSachLoi()
+        void XoaSachLoi()
         {
             if (Selected == null) return;
             if (MessageBox.Show("Xóa sách khỏi phiếu?", "Xác nhận", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 if (CXulyChiTietMuon.xoa(Selected.MaPhieuMuon, Selected.MaSachMuon))
                 {
-                    LoadData(); LamMoi();
+                    LoadData();
+                    LamMoiData();
                 }
             }
         }
 
-        void LamMoi()
+        void LamMoiData()
         {
             MaSachMuon = 0; LyDoPhat = ""; TienPhat = 0; Selected = null; LoadData();
         }

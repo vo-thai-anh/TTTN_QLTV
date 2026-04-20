@@ -45,6 +45,7 @@ namespace QLTV_WPF.ViewModels
             cmdlammoi = new RelayCommand(p => LamMoi());
             cmdsearch = new RelayCommand(p => Search());
             cmdMoChiTiet = new RelayCommand(p => MoChiTiet_Execute(), p => SelectedHienThi != null);
+            cmdTraSachNhanh = new RelayCommand(p => TraSachNhanh_Execute(), p => SelectedHienThi != null);
         }
 
         public RelayCommand cmdthem { get; set; }
@@ -53,6 +54,7 @@ namespace QLTV_WPF.ViewModels
         public RelayCommand cmdlammoi { get; set; }
         public RelayCommand cmdsearch { get; set; }
         public RelayCommand cmdMoChiTiet { get; set; }
+        public RelayCommand cmdTraSachNhanh { get; set; }
 
         private List<PhieuMuon> _list;
         public List<PhieuMuon> List
@@ -291,6 +293,16 @@ namespace QLTV_WPF.ViewModels
             
             var window = new UI.QL_ChiTietMuon(SelectedHienThi.MaPhieuMuon);
             window.ShowDialog();
+            LoadData();
+        }
+        private void TraSachNhanh_Execute()
+        {
+            if (SelectedHienThi == null) return;
+
+            // Chỉ cần gọi thẳng cửa sổ All-in-One và ném mã Phiếu mượn sang
+            var windowTra = new UI.QL_PhieuTra(SelectedHienThi.MaPhieuMuon);
+            windowTra.ShowDialog();
+
             LoadData();
         }
     }
