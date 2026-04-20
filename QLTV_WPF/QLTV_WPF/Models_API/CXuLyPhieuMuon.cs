@@ -35,7 +35,7 @@ namespace QLTV_WPF.Models_API
             {
                 var kq = hc.PostAsJsonAsync(strurl, pm);
                 kq.Wait();
-                if (kq.Result.IsSuccessStatusCode)
+                if (kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode)
                 {
                     var phieuMoi = kq.Result.Content.ReadFromJsonAsync<PhieuMuon>();
                     phieuMoi.Wait();

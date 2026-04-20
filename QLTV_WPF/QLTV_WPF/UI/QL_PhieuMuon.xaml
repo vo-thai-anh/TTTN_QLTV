@@ -118,6 +118,9 @@
                 <Button Content="🔄 Làm mới" Width="120" Height="35" Margin="5"
                         Background="#3498DB" Foreground="White" FontWeight="Bold"
                         Command="{Binding cmdlammoi}"/>
+                <Button Content="Xem chi tiết phiếu mượn" Width="130" Height="35" Margin="5"
+                        Background="#8E44AD" Foreground="White" FontWeight="Bold"
+                        Command="{Binding cmdMoChiTiet}"/>
             </StackPanel>
 
             <!-- DATAGRID -->

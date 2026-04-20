@@ -13,10 +13,10 @@ namespace QLTV_API.Models
         public int? MaPhieuTra { get; set; }
 
         [JsonIgnore]
-        public virtual PhieuMuon MaPhieuMuonNavigation { get; set; } = null!;
+        public virtual PhieuMuon? MaPhieuMuonNavigation { get; set; } = null!;
         [JsonIgnore]
         public virtual PhieuTra? MaPhieuTraNavigation { get; set; }
         [JsonIgnore]
-        public virtual SachMuon MaSachMuonNavigation { get; set; } = null!;
+        public virtual SachMuon? MaSachMuonNavigation { get; set; } = null!;
     }
 }

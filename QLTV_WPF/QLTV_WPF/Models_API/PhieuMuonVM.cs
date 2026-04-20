@@ -44,6 +44,7 @@ namespace QLTV_WPF.ViewModels
             cmdxoa = new RelayCommand(p => Xoa(), p => Selected != null);
             cmdlammoi = new RelayCommand(p => LamMoi());
             cmdsearch = new RelayCommand(p => Search());
+            cmdMoChiTiet = new RelayCommand(p => MoChiTiet_Execute(), p => SelectedHienThi != null);
         }
 
         public RelayCommand cmdthem { get; set; }
@@ -51,6 +52,7 @@ namespace QLTV_WPF.ViewModels
         public RelayCommand cmdxoa { get; set; }
         public RelayCommand cmdlammoi { get; set; }
         public RelayCommand cmdsearch { get; set; }
+        public RelayCommand cmdMoChiTiet { get; set; }
 
         private List<PhieuMuon> _list;
         public List<PhieuMuon> List
@@ -281,6 +283,15 @@ namespace QLTV_WPF.ViewModels
             Keyword = "";
             Selected = null;
             SelectedHienThi = null;
+        }
+        private void MoChiTiet_Execute()
+        {
+            if (SelectedHienThi == null) return;
+
+            
+            var window = new UI.QL_ChiTietMuon(SelectedHienThi.MaPhieuMuon);
+            window.ShowDialog();
+            LoadData();
         }
     }
 }
