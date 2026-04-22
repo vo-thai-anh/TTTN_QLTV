@@ -1,5 +1,4 @@
-﻿using QLTV_API.Models;
-using QLTV_WPF.Models;
+﻿using QLTV_WPF.Models;
 using QLTV_WPF.Models_API;
 using System;
 using System.Collections.Generic;

@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
-using QLTV_API.Models;
+using QLTV_WPF.Models;
 
-namespace QLTV_API.Models
+namespace QLTV_WPF.Models
 {
     public partial class QuanLyThuVienContext : DbContext
     {
