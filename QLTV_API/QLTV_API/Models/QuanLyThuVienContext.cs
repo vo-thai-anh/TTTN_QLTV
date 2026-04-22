@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using System;
+using System.Collections.Generic;
+using QLTV_API.Models;
 
 namespace QLTV_API.Models
 {
@@ -31,8 +32,7 @@ namespace QLTV_API.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseSqlServer("Data Source=EMTHAIXITIN;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=False");
+                optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=False");
             }
         }
 
@@ -229,14 +229,17 @@ namespace QLTV_API.Models
                     .WithMany(p => p.MaSaches)
                     .UsingEntity<Dictionary<string, object>>(
                         "SachTacGia",
+
+                        // Trả TacGia về đúng vị trí đầu tiên
                         l => l.HasOne<TacGia>().WithMany().HasForeignKey("MaTg").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__Sach_TacGi__MaTG__571DF1D5"),
+
+                        // Trả Sach về vị trí thứ hai
                         r => r.HasOne<Sach>().WithMany().HasForeignKey("MaSach").OnDelete(DeleteBehavior.ClientSetNull).HasConstraintName("FK__Sach_TacG__MaSac__5629CD9C"),
+
                         j =>
                         {
                             j.HasKey("MaSach", "MaTg").HasName("PK__Sach_Tac__E047242AC5D92F86");
-
                             j.ToTable("Sach_TacGia");
-
                             j.IndexerProperty<int>("MaTg").HasColumnName("MaTG");
                         });
             });

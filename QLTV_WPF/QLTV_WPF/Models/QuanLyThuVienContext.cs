@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using QLTV_WPF.Models;
 using System;
 using System.Collections.Generic;
+using QLTV_API.Models;
 
 namespace QLTV_API.Models
 {

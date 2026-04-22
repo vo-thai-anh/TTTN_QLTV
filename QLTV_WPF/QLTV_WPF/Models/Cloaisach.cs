@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace QLTV_WPF.Models
 {
-    class Cloaisach
+    class CLoaiSach
     {
         public int MaLoai { get; set; }
         public string TenLoai { get; set; } = null!;

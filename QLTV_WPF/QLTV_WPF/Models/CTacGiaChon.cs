@@ -12,7 +12,7 @@ namespace QLTV_WPF.Models
         public bool IsSelected
         {
             get => m_isSelected;
-            set { m_isSelected = value; } 
+            set { m_isSelected = value; }
         }
     }
 }

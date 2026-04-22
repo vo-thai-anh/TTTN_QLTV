@@ -62,9 +62,9 @@ namespace QLTV_API.Controllers
 
                 return Ok(new
                 {
-                    Maloai = a.MaLoai,
-                    Tenloai = a.TenLoai,
-                    Mota = a.MoTa
+                    MaLoai = a.MaLoai,
+                    TenLoai = a.TenLoai,
+                    MoTa = a.MoTa
                 });
             }
             catch (Exception)
