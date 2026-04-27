@@ -27,7 +27,18 @@ namespace QLTV_WPF.Models_API
             {
                 var kq = hc.PostAsJsonAsync<TacGia>(strurl, tg);
                 kq.Wait();
-                return kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode;
+
+                if (!kq.Result.IsSuccessStatusCode)
+                {
+                    // Đọc thông báo lỗi chi tiết từ API trả về
+                    string errorDetails = kq.Result.Content.ReadAsStringAsync().Result;
+
+                    // Hiển thị hộp thoại để bạn dễ dàng nhìn thấy nguyên nhân thực sự
+                    System.Windows.MessageBox.Show("Chi tiết lỗi từ API:\n" + errorDetails, "Lỗi Server", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+
+                    return false;
+                }
+                return true;
             }
         }
         public static bool suatg(TacGia tg)
