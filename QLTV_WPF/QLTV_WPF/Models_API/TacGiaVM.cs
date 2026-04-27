@@ -145,7 +145,9 @@ namespace QLTV_WPF.Models_API
                 {
                     ListTacGia = CXuLyTacGia.getdstg();
                     LamMoi();
+                    MessageBox.Show("Xóa thành công!", "Thông báo");
                 }
+                
             }
         }
 
