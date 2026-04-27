@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QLTV_API.Models;
 using QLTV_API.ModelsDTO;
@@ -62,9 +63,9 @@ namespace QLTV_API.Controllers
 
                 return Ok(new
                 {
-                    Maloai = a.MaLoai,
-                    Tenloai = a.TenLoai,
-                    Mota = a.MoTa
+                    MaLoai = a.MaLoai,
+                    TenLoai = a.TenLoai,
+                    MoTa = a.MoTa
                 });
             }
             catch (Exception)

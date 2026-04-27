@@ -58,5 +58,6 @@ namespace QLTV_WPF.Models_API
                 return kq.IsCompletedSuccessfully ? kq.Result : new List<NhanVien>();
             }
         }
+
     }
 }

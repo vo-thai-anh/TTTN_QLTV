@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
+
 namespace QLTV_WPF.Models_API
 {
     class LoaiSachVM : CBaseMVVM
@@ -66,7 +67,7 @@ namespace QLTV_WPF.Models_API
         }
         public void ThemLS_Execute(object parametera)
         {
-            Cloaisach moi = new Cloaisach
+            CLoaiSach moi = new CLoaiSach
             {
                 TenLoai = this.Tenloai,
                 MoTa = this.Mota
@@ -102,7 +103,7 @@ namespace QLTV_WPF.Models_API
         }
         public void SuaLS_Execute(object parameter)
         {
-            Cloaisach update = new Cloaisach
+            CLoaiSach update = new CLoaiSach
             {
                 MaLoai = SelectedLoaiSach.MaLoai,
                 TenLoai = this.Tenloai,

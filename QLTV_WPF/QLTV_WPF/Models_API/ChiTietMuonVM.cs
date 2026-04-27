@@ -6,16 +6,11 @@ using System.Windows;
 
 namespace QLTV_WPF.ViewModels
 {
-
     class ChiTietMuonVM : CBaseMVVM
     {
-        private int _maPhieuHienTai;
-        public ChiTietMuonVM(int maPhieu)
+        public ChiTietMuonVM()
         {
-           _maPhieuHienTai = maPhieu;
-             MaPhieuMuon = maPhieu; // Gán sẵn mã phiếu để khi quét mã sách là Thêm vào đúng phiếu này
-    
-             LoadData();
+            LoadData();
 
             cmdthem = new RelayCommand(p => Them(), p => true);
             cmdsua = new RelayCommand(p => Sua(), p => Selected != null);

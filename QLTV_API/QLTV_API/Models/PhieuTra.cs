@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+
 namespace QLTV_API.Models
 {
     public partial class PhieuTra
@@ -17,7 +17,6 @@ namespace QLTV_API.Models
         public string? GhiChu { get; set; }
 
         public virtual NhanVien? MaNhanVienNavigation { get; set; }
-        [JsonIgnore]
         public virtual ICollection<ChiTietMuon> ChiTietMuons { get; set; }
     }
 }

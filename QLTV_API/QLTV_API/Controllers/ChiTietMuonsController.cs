@@ -17,7 +17,6 @@ namespace QLTV_API.Controllers
         {
             _context = context;
         }
-
         // GET
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ChiTietMuon>>> Get()

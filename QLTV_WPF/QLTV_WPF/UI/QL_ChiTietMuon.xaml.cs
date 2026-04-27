@@ -19,10 +19,10 @@ namespace QLTV_WPF.UI
     /// </summary>
     public partial class QL_ChiTietMuon : Window
     {
-        public QL_ChiTietMuon(int maPhieu)
+        public QL_ChiTietMuon()
         {
            InitializeComponent();
-            this.DataContext = new QLTV_WPF.ViewModels.ChiTietMuonVM(maPhieu);
+            this.DataContext = new QLTV_WPF.ViewModels.ChiTietMuonVM();
         }
     }
 }

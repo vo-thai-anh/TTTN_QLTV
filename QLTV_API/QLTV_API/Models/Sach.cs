@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 
 namespace QLTV_API.Models
 {
@@ -18,16 +17,13 @@ namespace QLTV_API.Models
         public int? SoTrang { get; set; }
         public string? TomTat { get; set; }
         public int? SoLuong { get; set; }
-        public int? MaNxb { get; set; }
         public int? MaLoai { get; set; }
+        public int? MaNxb { get; set; }
 
         public virtual LoaiSach? MaLoaiNavigation { get; set; }
         public virtual NhaXuatBan? MaNxbNavigation { get; set; }
-
-        [JsonIgnore]
         public virtual ICollection<SachMuon> SachMuons { get; set; }
 
-        [JsonIgnore]
         public virtual ICollection<TacGia> MaTgs { get; set; }
     }
 }

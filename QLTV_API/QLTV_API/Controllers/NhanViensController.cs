@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QLTV_API.Models;
-using System.Text.Json.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace QLTV_API.Controllers
 {
@@ -33,67 +36,55 @@ namespace QLTV_API.Controllers
             return nv;
         }
 
-
-
-        // 4. THÊM MỚI NHÂN VIÊN
+        // 3. THÊM MỚI NHÂN VIÊN (Chỉ cho phép tạo chức vụ Nhân viên)
         [HttpPost]
         public async Task<ActionResult<NhanVien>> PostNhanVien(NhanVien nv)
         {
-            // Ép mã về 0 để SQL Server tự tăng
-            nv.MaNv = 0;
-
-            if (string.IsNullOrWhiteSpace(nv.HoTen) ||
-                string.IsNullOrWhiteSpace(nv.TaiKhoan) ||
-                string.IsNullOrWhiteSpace(nv.MatKhau))
+            // Chặn nếu cố tình đặt chức vụ Quản lý/Admin hoặc đặt tài khoản là admin
+            if (string.Equals(nv.ChucVu, "Quản lý", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(nv.ChucVu, "Admin", StringComparison.OrdinalIgnoreCase) ||
+                nv.TaiKhoan.ToLower() == "admin")
             {
-                return BadRequest("Họ tên, Tài khoản và Mật khẩu không được để trống!");
+                return BadRequest("Hệ thống chỉ cho phép tạo tài khoản Nhân viên.");
             }
 
-            //Kiểm tra chức vụ ( ?? "" để tránh cảnh báo)
-            var dsChucVu = new List<string> { "Nhân viên", "Quản lý" };
-            if (!dsChucVu.Contains(nv.ChucVu ?? ""))
-            {
-                return BadRequest("Chức vụ phải là 'Nhân viên' hoặc 'Quản lý'.");
-            }
+            // Luôn gán cứng chức vụ là Nhân viên để đảm bảo an toàn
+            nv.ChucVu = "Nhân viên";
 
+            // Băm mật khẩu khi tạo mới
             var hasher = new PasswordHasher<NhanVien>();
-            // Băm mật khẩu trước khi đưa vào Database
-            nv.MatKhau = hasher.HashPassword(nv, nv.MatKhau!);
+            nv.MatKhau = hasher.HashPassword(nv, nv.MatKhau);
 
             _context.NhanViens.Add(nv);
             await _context.SaveChangesAsync();
-
-            return Ok("Thêm nhân viên mới thành công.");
+            return CreatedAtAction("GetNhanVien", new { id = nv.MaNv }, nv);
         }
-        // 5. CẬP NHẬT THÔNG TIN NHÂN VIÊN
+
+        // 4. CẬP NHẬT THÔNG TIN NHÂN VIÊN
         [HttpPut("{id}")]
         public async Task<IActionResult> PutNhanVien(int id, NhanVien nv)
         {
-            // thông tin nhân viên cũ
             var nvOld = await _context.NhanViens.AsNoTracking().FirstOrDefaultAsync(x => x.MaNv == id);
 
             if (nvOld == null)
                 return NotFound("Không tìm thấy nhân viên.");
 
+
             nv.MaNv = id;
+            // Ép chức vụ về Nhân viên để tránh việc đổi từ Nhân viên lên Quản lý qua API
+            //nv.ChucVu = "Nhân viên";
 
-            var dsChucVu = new List<string> { "Nhân viên", "Quản lý" };
-            if (!dsChucVu.Contains(nv.ChucVu))
-                return BadRequest("Lỗi: Chức vụ không hợp lệ.");
-
-            //XỬ LÝ MẬT KHẨU
+            // XỬ LÝ MẬT KHẨU
             var hasher = new PasswordHasher<NhanVien>();
-
             if (string.IsNullOrWhiteSpace(nv.MatKhau))
             {
-                // Nếu ô mật khẩu trống -> Lấy lại mật khẩu cũ đã mã hóa trong DB để giữ nguyên
                 nv.MatKhau = nvOld.MatKhau;
             }
             else
             {
-                // Nếu có nhập mật khẩu mới -> Tiến hành băm (Hash) mật khẩu mới
                 nv.MatKhau = hasher.HashPassword(nv, nv.MatKhau);
             }
+
             _context.Entry(nv).State = EntityState.Modified;
 
             try
@@ -108,27 +99,26 @@ namespace QLTV_API.Controllers
             }
         }
 
-        // 6. XÓA NHÂN VIÊN
+        // 5. XÓA NHÂN VIÊN
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteNhanVien(int id)
         {
-            // Kiểm tra xem nhân viên này có lập phiếu mượn nào không
-            bool hasPhieuMuon = await _context.PhieuMuons.AnyAsync(p => p.MaNhanVien == id);
-
-            if (hasPhieuMuon)
-            {
-                return BadRequest("Không thể xóa! Nhân viên này đã lập phiếu mượn.");
-            }
-
             var nv = await _context.NhanViens.FindAsync(id);
             if (nv == null) return NotFound("Không tìm thấy nhân viên.");
 
+            // QUÉT CHỨC VỤ: Chặn xóa nếu chức vụ là Quản lý hoặc Admin
+            if (string.Equals(nv.ChucVu, "Quản lý", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(nv.ChucVu, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest("Đây là tài khoản Quản lý hệ thống, không thể xóa!");
+            }
+
             _context.NhanViens.Remove(nv);
             await _context.SaveChangesAsync();
-
-            return Ok("Xóa nhân viên thành công.");
+            return Ok("Đã xóa nhân viên thành công.");
         }
-        //Tìm kiếm theo keyword
+
+        // 6. TÌM KIẾM
         [HttpGet("Search")]
         public async Task<ActionResult<IEnumerable<NhanVien>>> SearchNhanVien(string keyword)
         {
@@ -137,13 +127,11 @@ namespace QLTV_API.Controllers
                 return await _context.NhanViens.ToListAsync();
             }
 
-            // Tìm theo tên hoặc SĐT
             var kq = await _context.NhanViens
                 .Where(x => x.HoTen.Contains(keyword) || x.Sdt.Contains(keyword))
                 .ToListAsync();
 
             return kq;
         }
-       
     }
 }

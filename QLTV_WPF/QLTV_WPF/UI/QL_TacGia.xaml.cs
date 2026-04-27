@@ -1,5 +1,4 @@
-﻿using QLTV_API.Models;
-using QLTV_WPF.Models;
+﻿using QLTV_WPF.Models;
 using QLTV_WPF.Models_API;
 using System;
 using System.Collections.Generic;
@@ -22,10 +21,24 @@ namespace QLTV_WPF.UI
     /// </summary>
     public partial class QL_TacGia : Window
     {
+        QuanLyThuVienContext db = new QuanLyThuVienContext();
+
         public QL_TacGia()
         {
             InitializeComponent();
-            this.DataContext = new TacGiaVM();
+            DataContext = new TacGiaVM();
+        }
+
+        // Hàm tải dữ liệu từ Database
+
+        private void dgTacGia_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (dgTacGia.SelectedItem is TacGia selected)
+            {
+                txtMaTg.Text = selected.MaTg.ToString();
+                txtTenTg.Text = selected.TenTg;
+                txtTieuSu.Text = selected.TieuSu;
+            }
         }
     }
 }

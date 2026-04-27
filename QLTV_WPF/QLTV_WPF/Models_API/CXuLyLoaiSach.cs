@@ -6,7 +6,6 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace QLTV_WPF.Models_API
 {
     class CXuLyLoaiSach
@@ -26,11 +25,11 @@ namespace QLTV_WPF.Models_API
             }
             return kq.Result;
         }
-        public static bool themls(Cloaisach ls)
+        public static bool themls(CLoaiSach ls)
         {
                 using (HttpClient hc = new HttpClient())
                 {
-                    var kq = hc.PostAsJsonAsync<Cloaisach>(strurl, ls);
+                    var kq = hc.PostAsJsonAsync<CLoaiSach>(strurl, ls);
                     kq.Wait();
 
                     if (kq.IsCompletedSuccessfully)
@@ -38,10 +37,9 @@ namespace QLTV_WPF.Models_API
                         return kq.Result.IsSuccessStatusCode;
                     }
                 }
-
             return false;
         }
-        public static bool suals(Cloaisach ls)
+        public static bool suals(CLoaiSach ls)
         {
             using (HttpClient hc = new HttpClient())
             {
@@ -50,8 +48,6 @@ namespace QLTV_WPF.Models_API
                 return kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode;
             }
         }
-
-        // Xóa dữ liệu
         public static bool xoals(int maLoai)
         {
             using (HttpClient hc = new HttpClient())
