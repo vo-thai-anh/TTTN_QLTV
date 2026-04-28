@@ -39,24 +39,14 @@
                 <TextBox Grid.Column="3" Height="30" Margin="5"
                          Text="{Binding MaSachMuon, UpdateSourceTrigger=PropertyChanged}"
                          VerticalContentAlignment="Center"/>
-
-                <TextBlock Text="Tiền phạt (nếu có):" Grid.Row="1" Margin="5" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Height="30" Margin="5"
-                         Text="{Binding TienPhat, UpdateSourceTrigger=PropertyChanged}"
-                         VerticalContentAlignment="Center"/>
-
-                <TextBlock Text="Lý do phạt:" Grid.Row="1" Grid.Column="2" Margin="5" VerticalAlignment="Center" FontWeight="SemiBold"/>
-                <TextBox Grid.Row="1" Grid.Column="3" Height="30" Margin="5"
-                         Text="{Binding LyDoPhat, UpdateSourceTrigger=PropertyChanged}"
-                         VerticalContentAlignment="Center"/>
             </Grid>
         </Border>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15">
 
-            <Button Content="➕ Quét thêm (Enter)" Width="150" Height="35" Margin="5"
+            <Button Content="➕ Thêm vào phiếu" Width="150" Height="35" Margin="5"
                     Background="#27AE60" Foreground="White" FontWeight="Bold" IsDefault="True"
-                    Command="{Binding cmdQuetThem}"/>
+                    Command="{Binding cmdQuetThem}" Click="Button_Click"/>
 
             <Button Content="📥 Nhận trả sách" Width="130" Height="35" Margin="5"
                     Background="#F39C12" Foreground="White" FontWeight="Bold"

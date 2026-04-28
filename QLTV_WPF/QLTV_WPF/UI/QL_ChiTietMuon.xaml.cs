@@ -24,5 +24,10 @@ namespace QLTV_WPF.UI
             InitializeComponent();
             this.DataContext = new QLTV_WPF.ViewModels.ChiTietMuonVM(maPhieu);
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

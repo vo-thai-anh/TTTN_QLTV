@@ -127,7 +127,7 @@ namespace QLTV_WPF.ViewModels
 
             if (danhSachChuaTra.Count == 0)
             {
-                MessageBox.Show("Phiếu mượn này không có sách nào đang nợ!", "Thông báo");
+                MessageBox.Show("Phiếu mượn này không có sách nào đang mượn!", "Thông báo");
                 ListSachNo = null;
                 return;
             }

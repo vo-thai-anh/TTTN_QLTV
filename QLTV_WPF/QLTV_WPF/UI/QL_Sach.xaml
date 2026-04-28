@@ -146,7 +146,7 @@
                  FontSize="14"
                  Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"/>
                 <!-- Placeholder -->
-                <TextBlock Text="🔎 Nhập tên sách, tác giả hoặc loại..."
+                <TextBlock Text=""
                    VerticalAlignment="Center"
                    Margin="10,0,0,0"
                    Foreground="#AAAAAA"

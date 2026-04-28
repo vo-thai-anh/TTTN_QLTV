@@ -51,7 +51,7 @@
         <DataGrid x:Name="dgSachMuon" Grid.Row="3" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
                   ItemsSource="{Binding ListSachMuon}" SelectedItem="{Binding SelectedSachMuon}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Mã Vạch" Binding="{Binding MaSachMuon}" Width="80"/>
+                <DataGridTextColumn Header="Mã Cuốn Sách" Binding="{Binding MaSachMuon}" Width="100"/>
                 <DataGridTextColumn Header="Mã Đầu Sách" Binding="{Binding MaSach}" Width="100"/>
                 <DataGridTextColumn Header="Trạng thái mượn" Binding="{Binding TenTrangThai}" Width="120" FontWeight="Bold"/>
                 <DataGridTextColumn Header="Tình trạng vật lý" Binding="{Binding TinhTrang}" Width="*"/>
