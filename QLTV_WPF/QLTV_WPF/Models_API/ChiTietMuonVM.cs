@@ -3,6 +3,7 @@ using QLTV_WPF.Models_API;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Linq;
 
 namespace QLTV_WPF.ViewModels
 {
@@ -79,18 +80,49 @@ namespace QLTV_WPF.ViewModels
         {
             if (MaSachMuon == null || MaSachMuon <= 0)
             {
-                MessageBox.Show("Vui lòng nhập mã cuốn sách vật lý!");
+                System.Windows.MessageBox.Show("Vui lòng nhập mã cuốn sách vật lý!");
                 return;
             }
 
-            if (Selected != null) { MessageBox.Show("Vui lòng bấm Làm mới trước khi thêm sách mới!"); return; }
+            if (Selected != null)
+            {
+                System.Windows.MessageBox.Show("Vui lòng bấm Làm mới trước khi thêm sách mới!");
+                return;
+            }
 
+            // --- BỊT LỖ HỔNG: KIỂM TRA TRẠNG THÁI CUỐN SÁCH ---
+            // Lấy toàn bộ kho sách vật lý về để dò tìm cuốn này
+            var toanBoKho = CXuLySachMuon.getdssachmuon();
+            var sachVatLy = toanBoKho?.FirstOrDefault(x => x.MaSachMuon == MaSachMuon.Value);
+
+            // 1. Kiểm tra xem mã sách có tồn tại không
+            if (sachVatLy == null)
+            {
+                System.Windows.MessageBox.Show("Mã sách này không tồn tại trong kho!", "Lỗi nhập liệu",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                return;
+            }
+
+            // 2. CẤM thêm nếu sách không ở trạng thái "0 - Sẵn sàng"
+            if (sachVatLy.TrangThai != 0)
+            {
+                // Dịch mã số thành chữ để báo lỗi cho thủ thư dễ hiểu
+                string tenTrangThai = sachVatLy.TrangThai == 1 ? "Đang được người khác mượn" :
+                                      sachVatLy.TrangThai == 2 ? "Đang đem đi bảo trì" : "Đã báo mất";
+
+                System.Windows.MessageBox.Show($"Không thể thêm cuốn sách này vào phiếu!\nLý do: Sách {tenTrangThai}.",
+                    "Cảnh báo an toàn", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                return; // Chặn đứng tại đây, không chạy lệnh thêm bên dưới
+            }
+            // ---------------------------------------------------
+
+            // Nếu qua được các ải kiểm tra trên -> Thêm bình thường
             var ct = new ChiTietMuon { MaPhieuMuon = _maPhieuHienTai, MaSachMuon = MaSachMuon.Value };
 
             if (CXulyChiTietMuon.them(ct))
             {
                 LoadData();
-                LamMoiData();
+                LamMoiData(); // Nhớ đổi tên chỗ này thành LamMoi() nếu code của bạn đang dùng chữ LamMoi() nhé
             }
         }
 
