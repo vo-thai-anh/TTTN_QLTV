@@ -19,10 +19,10 @@ namespace QLTV_WPF.UI
     /// </summary>
     public partial class QL_PhieuTra : Window
     {
-        public QL_PhieuTra()
+        public QL_PhieuTra(int maPhieuMuon = 0)
         {
             InitializeComponent();
-            this.DataContext = new QLTV_WPF.ViewModels.PhieuTraVM();
+            this.DataContext = new QLTV_WPF.ViewModels.PhieuTraVM(maPhieuMuon);
         }
     }
 }

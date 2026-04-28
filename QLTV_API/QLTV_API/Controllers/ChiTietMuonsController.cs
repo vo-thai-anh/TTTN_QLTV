@@ -17,6 +17,7 @@ namespace QLTV_API.Controllers
         {
             _context = context;
         }
+
         // GET
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ChiTietMuon>>> Get()
@@ -51,7 +52,7 @@ namespace QLTV_API.Controllers
             var sachMuon = await _context.SachMuons.FirstOrDefaultAsync(s => s.MaSachMuon == ct.MaSachMuon);
             if (sachMuon == null)
                 return NotFound("Không tìm thấy mã Sách Mượn này trong kho.");
-            
+
             if (sachMuon.TrangThai == 1)
                 return BadRequest("Cuốn sách này đang được người khác mượn, chưa trả lại kho!");
 

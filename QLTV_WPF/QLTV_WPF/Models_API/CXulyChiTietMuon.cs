@@ -34,11 +34,31 @@ namespace QLTV_WPF.Models_API
         // Thêm
         public static bool them(ChiTietMuon ct)
         {
-            using (HttpClient hc = new HttpClient())
+            try
             {
-                var kq = hc.PostAsJsonAsync(strurl, ct);
-                kq.Wait();
-                return kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode;
+                using (HttpClient hc = new HttpClient())
+                {
+                    var kq = hc.PostAsJsonAsync(strurl, ct);
+                    kq.Wait();
+
+                    // Nếu API trả về 200 OK
+                    if (kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode)
+                        return true;
+
+                    // NẾU THẤT BẠI: Đọc lỗi thật từ Server
+                    var errMsg = kq.Result.Content.ReadAsStringAsync().Result;
+                    System.Windows.MessageBox.Show($"API báo lỗi chi tiết:\n{errMsg}", "Lỗi Server",
+                                                   System.Windows.MessageBoxButton.OK,
+                                                   System.Windows.MessageBoxImage.Error);
+                    return false;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Lỗi kết nối:\n{ex.Message}", "Lỗi",
+                                               System.Windows.MessageBoxButton.OK,
+                                               System.Windows.MessageBoxImage.Error);
+                return false;
             }
         }
 

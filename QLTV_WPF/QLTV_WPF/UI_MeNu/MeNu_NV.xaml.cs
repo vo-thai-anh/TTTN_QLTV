@@ -53,7 +53,7 @@ namespace QLTV_WPF.UI_MeNu
 
         private void QLChiTietMuon_Click(object sender, RoutedEventArgs e)
         {
-            QL_ChiTietMuon f = new QL_ChiTietMuon();
+            QL_ChiTietMuon f = new QL_ChiTietMuon(0);
             f.Show();
         }
 
