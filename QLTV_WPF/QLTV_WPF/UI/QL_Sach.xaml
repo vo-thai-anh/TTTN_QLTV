@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Quản Lý Đầu Sách" Height="650" Width="900" WindowStartupLocation="CenterScreen">
+
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -11,8 +12,15 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="QUẢN LÝ THÔNG TIN SÁCH" FontSize="26" FontWeight="Bold" Foreground="#2C3E50" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+        <!-- Tiêu đề -->
+        <TextBlock Text="QUẢN LÝ THÔNG TIN SÁCH"
+                   FontSize="26"
+                   FontWeight="Bold"
+                   Foreground="#2C3E50"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,15"/>
 
+        <!-- FORM -->
         <Border Grid.Row="1" Background="#FDFEFE" CornerRadius="10" Padding="20" BorderBrush="#D0D7E2" BorderThickness="1">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -23,59 +31,98 @@
                     <ColumnDefinition Width="100"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Text="Tên sách:" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox x:Name="txtTenSach" Grid.Column="1" Height="30" Margin="5"
-                 Text="{Binding Tensach, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- Tên sách -->
+                <TextBlock Text="Tên sách:" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Margin="5"
+                         Text="{Binding Tensach}"
+                         IsEnabled="{Binding IsQuanLy}"/>
 
-                <Button Grid.Column="2" Content="✍️ Tác giả" Width="90" Height="30" Margin="5,0,0,0" 
-                Background="#9B59B6" Foreground="White" FontWeight="Bold" FontSize="11"
-                Command="{Binding cmdQuanLyTacGia}"
-                ToolTip="Gán tác giả cho cuốn sách này"/>
+                <!-- Tác giả -->
+                <Button Grid.Column="2" Content="✍️ Tác giả"
+                        Width="90"
+                        Margin="5,0,0,0"
+                        Command="{Binding cmdQuanLyTacGia}"
+                        IsEnabled="{Binding IsQuanLy}"/>
 
-                <TextBlock Text="Số lượng:" Grid.Column="4" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox x:Name="txtSoLuong" Grid.Column="5" Height="30" Margin="5"
-                 Text="{Binding Soluong, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- Số lượng -->
+                <TextBlock Text="Số lượng:" Grid.Column="4" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="5" Margin="5"
+                         Text="{Binding Soluong}"
+                         IsEnabled="{Binding IsQuanLy}"/>
 
-                <TextBlock Text="Năm XB:" Grid.Row="1" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox x:Name="txtNamXB" Grid.Row="1" Grid.Column="1" Height="30" Margin="5"
-                 Text="{Binding Namxb, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- Năm XB -->
+                <TextBlock Text="Năm XB:" Grid.Row="1"/>
+                <TextBox Grid.Row="1" Grid.Column="1" Margin="5"
+                         Text="{Binding Namxb}"
+                         IsEnabled="{Binding IsQuanLy}"/>
 
-                <TextBlock Text="Số trang:" Grid.Row="1" Grid.Column="4" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox x:Name="txtSoTrang" Grid.Row="1" Grid.Column="5" Height="30" Margin="5"
-                 Text="{Binding Sotrang, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- Số trang -->
+                <TextBlock Text="Số trang:" Grid.Row="1" Grid.Column="4"/>
+                <TextBox Grid.Row="1" Grid.Column="5" Margin="5"
+                         Text="{Binding Sotrang}"
+                         IsEnabled="{Binding IsQuanLy}"/>
 
-                <TextBlock Text="Loại sách:" Grid.Row="2" VerticalAlignment="Center" Margin="0,5"/>
-                <ComboBox x:Name="cbLoaiSach" Grid.Row="2" Grid.Column="1" Height="30" Margin="5" 
-                  ItemsSource="{Binding ListLoaiSach}" DisplayMemberPath="TenLoai" SelectedValuePath="MaLoai"
-                  SelectedValue="{Binding Maloai, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- Loại sách -->
+                <TextBlock Text="Loại sách:" Grid.Row="2"/>
+                <ComboBox Grid.Row="2" Grid.Column="1" Margin="5"
+                          ItemsSource="{Binding ListLoaiSach}"
+                          DisplayMemberPath="TenLoai"
+                          SelectedValuePath="MaLoai"
+                          SelectedValue="{Binding Maloai}"
+                          IsEnabled="{Binding IsQuanLy}"/>
 
-                <TextBlock Text="Nhà XB:" Grid.Row="2" Grid.Column="4" VerticalAlignment="Center" Margin="0,5"/>
-                <ComboBox x:Name="cbNXB" Grid.Row="2" Grid.Column="5" Height="30" Margin="5"
-                  ItemsSource="{Binding ListNXB}" DisplayMemberPath="TenNxb" SelectedValuePath="MaNxb"
-                  SelectedValue="{Binding Manxb, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- NXB -->
+                <TextBlock Text="Nhà XB:" Grid.Row="2" Grid.Column="4"/>
+                <ComboBox Grid.Row="2" Grid.Column="5" Margin="5"
+                          ItemsSource="{Binding ListNXB}"
+                          DisplayMemberPath="TenNxb"
+                          SelectedValuePath="MaNxb"
+                          SelectedValue="{Binding Manxb}"
+                          IsEnabled="{Binding IsQuanLy}"/>
 
-                <TextBlock Text="Tóm tắt:" Grid.Row="3" VerticalAlignment="Top" Margin="0,10"/>
-                <TextBox x:Name="txtTomTat" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="5" Height="60" Margin="5" 
-                 TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"
-                 Text="{Binding Tomtat, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- Tóm tắt -->
+                <TextBlock Text="Tóm tắt:" Grid.Row="3"/>
+                <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="5"
+                         Margin="5"
+                         Height="60"
+                         Text="{Binding Tomtat}"
+                         IsEnabled="{Binding IsQuanLy}"/>
             </Grid>
         </Border>
 
+        <!-- BUTTON -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15">
-            <Button Content="➕ Thêm" Width="90" Height="35" Margin="5" Background="#27AE60" Foreground="White" FontWeight="Bold" Command="{Binding cmdthemsach}"/>
-            <Button Content="✏️ Sửa" Width="90" Height="35" Margin="5" Background="#F39C12" Foreground="White" FontWeight="Bold" Command="{Binding cmdsuasach}"/>
-            <Button Content="🗑 Xóa" Width="90" Height="35" Margin="5" Background="#E74C3C" Foreground="White" FontWeight="Bold" Command="{Binding cmdxoasach}"/>
-            <Button Content="🔄 Làm mới" Width="90" Height="35" Margin="5" Background="#3498DB" Foreground="White" FontWeight="Bold" Command="{Binding cmdlammoi}"/>
-            <Button Content="📚 Nhập Kho Mượn" Width="140" Height="35" Margin="5" Background="#8E44AD" Foreground="White" FontWeight="Bold" 
-            Command="{Binding cmdMoKhoSach}"
-            ToolTip="Chọn một cuốn sách ở dưới rồi bấm vào đây để quản lý tình trạng mượn của cuốn đó"/>
+
+            <Button Content="➕ Thêm"
+                    Width="90" Margin="5"
+                    Command="{Binding cmdthemsach}"
+                    IsEnabled="{Binding IsQuanLy}"/>
+
+            <Button Content="✏️ Sửa"
+                    Width="90" Margin="5"
+                    Command="{Binding cmdsuasach}"
+                    IsEnabled="{Binding IsQuanLy}"/>
+
+            <Button Content="🗑 Xóa"
+                    Width="90" Margin="5"
+                    Command="{Binding cmdxoasach}"
+                    IsEnabled="{Binding IsQuanLy}"/>
+
+            <Button Content="🔄 Làm mới"
+                    Width="90" Margin="5"
+                    Command="{Binding cmdlammoi}"/>
+
+            <Button Content="📚 Nhập Kho Mượn"
+                    Width="140" Margin="5"
+                    Command="{Binding cmdMoKhoSach}"/>
         </StackPanel>
 
         <Grid Grid.Row="3" Margin="0,0,0,10">
@@ -84,14 +131,28 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Tìm kiếm sách:" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Margin="0,0,10,0"/>
+            <!-- Label -->
+            <TextBlock Text="Tìm kiếm sách:"
+               VerticalAlignment="Center"
+               FontWeight="Bold"
+               FontSize="14"
+               Margin="0,0,10,0"/>
 
+            <!-- Ô tìm kiếm -->
             <Grid Grid.Column="1">
-                <TextBox Height="35" VerticalContentAlignment="Center" Padding="5,0" FontSize="14"
-                         Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"/>
-                <TextBlock Text="🔎 Nhập tên sách, tên tác giả hoặc loại sách..."
-                           VerticalAlignment="Center" Margin="10,0,0,0"
-                           Foreground="#AAAAAA" FontStyle="Italic" IsHitTestVisible="False">
+                <TextBox Height="35"
+                 VerticalContentAlignment="Center"
+                 Padding="5,0"
+                 FontSize="14"
+                 Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"/>
+                <!-- Placeholder -->
+                <TextBlock Text="🔎 Nhập tên sách, tác giả hoặc loại..."
+                   VerticalAlignment="Center"
+                   Margin="10,0,0,0"
+                   Foreground="#AAAAAA"
+                   FontStyle="Italic"
+                   IsHitTestVisible="False">
+                    
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="Visibility" Value="Collapsed"/>
@@ -107,22 +168,25 @@
                     </TextBlock.Style>
                 </TextBlock>
             </Grid>
+            
         </Grid>
+        <!-- TABLE -->
+        <DataGrid Grid.Row="4"
+                  AutoGenerateColumns="False"
+                  ItemsSource="{Binding ListSach}"
+                  SelectedItem="{Binding SelectedSach}"
+                  IsReadOnly="True">
 
-        <DataGrid x:Name="dgSach" Grid.Row="4" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
-          ItemsSource="{Binding ListSach}" SelectedItem="{Binding SelectedSach}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Mã" Binding="{Binding MaSach}" Width="50"/>
-                <DataGridTextColumn Header="Tên Sách" Binding="{Binding TenSach}" Width="200"/>
+                <DataGridTextColumn Header="Tên" Binding="{Binding TenSach}" Width="200"/>
                 <DataGridTextColumn Header="Số lượng" Binding="{Binding SoLuong}" Width="80"/>
-
-                <DataGridTextColumn Header="Loại Sách" Binding="{Binding TenLoai}" Width="150"/>
-                <DataGridTextColumn Header="Nhà XB" Binding="{Binding TenNXB}" Width="150"/>
-
-                <DataGridTextColumn Header="Tác Giả" Binding="{Binding TenTacGia}" Width="200"/>
-
+                <DataGridTextColumn Header="Loại" Binding="{Binding TenLoai}" Width="150"/>
+                <DataGridTextColumn Header="NXB" Binding="{Binding TenNXB}" Width="150"/>
+                <DataGridTextColumn Header="Tác giả" Binding="{Binding TenTacGia}" Width="200"/>
                 <DataGridTextColumn Header="Tóm tắt" Binding="{Binding TomTat}" Width="*"/>
             </DataGrid.Columns>
+
         </DataGrid>
     </Grid>
 </Window>

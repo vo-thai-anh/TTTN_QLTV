@@ -34,8 +34,8 @@ namespace QLTV_WPF.UI_MeNu
 
         private void MenuItem_ClickSach(object sender, RoutedEventArgs e)
         {
-            UI.QL_Sach f = new UI.QL_Sach();
-            f.Show();
+            var window = new QL_Sach("Quản lý"); // hoặc "Quản lý"
+            window.Show();
         }
 
         private void QLTacGia_Click(object sender, RoutedEventArgs e)

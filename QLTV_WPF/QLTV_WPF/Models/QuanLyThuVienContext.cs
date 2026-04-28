@@ -32,7 +32,7 @@ namespace QLTV_WPF.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=.\\SQLEXPRESS;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=False");
+                optionsBuilder.UseSqlServer("Data Source=EMTHAIXITIN;Initial Catalog=QuanLyThuVien;Integrated Security=True;Encrypt=False");
             }
         }
 

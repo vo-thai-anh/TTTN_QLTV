@@ -20,12 +20,14 @@ namespace QLTV_WPF.UI
     /// </summary>
     public partial class QL_Sach : Window
     {
-        public QL_Sach()
+        public QL_Sach(string role)
         {
             InitializeComponent();
 
-            // Gắn ViewModel vào giao diện
-            DataContext = new SachVM();
+            var vm = new SachVM();
+            vm.UserRole = role;
+
+            this.DataContext = vm;
         }
     }
 }
