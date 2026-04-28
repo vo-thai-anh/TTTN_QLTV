@@ -37,6 +37,7 @@ namespace QLTV_WPF.ViewModels
         {
             ListNhanVien = CXuLyNhanVien.GetDsNhanVien();
             LoadData(); // Tải lịch sử ngay khi mở máy
+            LamMoi(); // Thiết lập lại các trường nhập liệu
 
             cmdlammoi = new RelayCommand(p => LamMoi());
             cmdsearch = new RelayCommand(p => Search());
@@ -186,6 +187,10 @@ namespace QLTV_WPF.ViewModels
             }
         }
 
-        void LamMoi() { MaNhanVien = null; GhiChu = ""; MaPhieuMuonTimKiem = 0; ListSachNo = null; Keyword = ""; LoadData(); }
+        void LamMoi() {
+            MaNhanVien = CSessionManager.MaNV;
+            GhiChu = ""; MaPhieuMuonTimKiem = 0; 
+            ListSachNo = null; Keyword = ""; 
+            LoadData(); }
     }
 }

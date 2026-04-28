@@ -26,6 +26,7 @@ namespace QLTV_WPF.ViewModels
             ListDocGia = CXuLyDocGia.getdsdg();
             ListNhanVien = CXuLyNhanVien.GetDsNhanVien();
             LoadData();
+            LamMoi();
             var viewDocGia = CollectionViewSource.GetDefaultView(ListDocGia);
             viewDocGia.Filter = (item) =>
             {
@@ -279,6 +280,7 @@ namespace QLTV_WPF.ViewModels
         void LamMoi()
         {
             MaDocGia = MaNhanVien = null;
+            MaNhanVien = CSessionManager.MaNV;
             NgayMuon = DateTime.Now;
             NgayTra = null;
             GhiChu = "";

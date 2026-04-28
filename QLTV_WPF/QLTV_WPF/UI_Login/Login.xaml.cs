@@ -50,6 +50,7 @@ namespace QLTV_WPF.UI
                 CSessionManager.Token = result.token;
                 CSessionManager.Role = result.role;
                 CSessionManager.Username = result.username;
+                CSessionManager.MaNV = result.manv;
 
                 // CHUYỂN GIAO DIỆN THEO ROLE
                 if (result.role == "Quản lý")
