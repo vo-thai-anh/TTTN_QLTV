@@ -8,8 +8,6 @@
         Background="#F4F6FA">
 
     <DockPanel>
-
-        <!-- HEADER -->
         <Border DockPanel.Dock="Top"
                 Background="#2C3E50"
                 Height="60">
