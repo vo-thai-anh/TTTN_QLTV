@@ -11,12 +11,14 @@ namespace QLTV_WPF.ViewModels
         public NhanVienVM()
         {
             LoadData();
+            ChucVu = "Nhân viên";
 
             cmdThem = new RelayCommand(p => Them(), p => SelectedNhanVien == null);
             cmdSua = new RelayCommand(p => Sua(), p => SelectedNhanVien != null);
             cmdXoa = new RelayCommand(p => Xoa(), p => SelectedNhanVien != null);
             cmdLamMoi = new RelayCommand(p => LamMoi());
             cmdSearch = new RelayCommand(p => Search());
+
         }
         public RelayCommand cmdThem { get; set; }
         public RelayCommand cmdSua { get; set; }
@@ -62,8 +64,18 @@ namespace QLTV_WPF.ViewModels
             }
         }
 
-        void LoadData() => ListNhanVien = CXuLyNhanVien.GetDsNhanVien();
+        void LoadData()
+        {
+            var ds = CXuLyNhanVien.GetDsNhanVien();
 
+            if (ds != null)
+            {
+                // ql->nv->a-z
+                ListNhanVien = ds.OrderBy(x => x.ChucVu == "Quản lý" ? 0 : 1)
+                                 .ThenBy(x => x.HoTen)
+                                 .ToList();
+            }
+        }
         void Search()
         {
             if (string.IsNullOrWhiteSpace(Keyword)) { LoadData(); return; }
@@ -107,55 +119,70 @@ namespace QLTV_WPF.ViewModels
         {
             if (!KiemTraNhapLieu(true)) return;
 
-            var nv = new NhanVien { MaNv = 0, HoTen = HoTen, Sdt = Sdt, Email = Email, ChucVu = ChucVu, MatKhau = MatKhau, TaiKhoan = TaiKhoan };
+            // Gán cứng chức vụ khi tạo mới
+            var nv = new NhanVien
+            {
+                MaNv = 0,
+                HoTen = HoTen,
+                Sdt = Sdt,
+                Email = Email,
+                ChucVu = "Nhân viên", // Luôn là nhân viên
+                MatKhau = MatKhau,
+                TaiKhoan = TaiKhoan
+            };
 
             if (CXuLyNhanVien.ThemNhanVien(nv))
             {
-                MessageBox.Show("Thêm thành công!", "Thông báo");
+                MessageBox.Show("Thêm nhân viên mới thành công!", "Thông báo");
                 LoadData();
                 LamMoi();
-            }
-            else
-            {
-                MessageBox.Show("Thêm thất bại!");
             }
         }
 
         void Sua()
         {
+            // 1. Kiểm tra xem đã chọn nhân viên chưa
             if (SelectedNhanVien == null) return;
+
+
+
+            // 3. Kiểm tra các ràng buộc nhập liệu (giữ lại hàm cũ của ông)
             if (!KiemTraNhapLieu(false)) return;
 
-            // Kiểm tra xem Admin có thay đổi Tài khoản hoặc Mật khẩu không
+            // 4. Cảnh báo khi thay đổi thông tin nhạy cảm (Tài khoản/Mật khẩu)
             bool isDoiTaiKhoan = TaiKhoan != SelectedNhanVien.TaiKhoan;
-            bool isDoiMatKhau = !string.IsNullOrWhiteSpace(MatKhau); 
+            bool isDoiMatKhau = !string.IsNullOrWhiteSpace(MatKhau);
 
             if (isDoiTaiKhoan || isDoiMatKhau)
             {
-                string noiDungCanhBao = "Bạn đang thay đổi thông tin đăng nhập:";
-                if (isDoiTaiKhoan) noiDungCanhBao += "\n- Tên đăng nhập";
-                if (isDoiMatKhau) noiDungCanhBao += "\n- Mật khẩu mới";
-                noiDungCanhBao += "\n\n Bạn có chắc chắn muốn thay đổi?";
+                string noiDungCanhBao = "Bạn đang thay đổi thông tin đăng nhập quan trọng:";
+                if (isDoiTaiKhoan) noiDungCanhBao += "\n- Tên đăng nhập (Username)";
+                if (isDoiMatKhau) noiDungCanhBao += "\n- Mật khẩu mới (Password)";
+                noiDungCanhBao += "\n\nViệc này có thể khiến nhân viên không thể đăng nhập bằng thông tin cũ. Bạn có chắc chắn?";
 
                 var result = MessageBox.Show(noiDungCanhBao, "Xác nhận thay đổi",
                                              MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
                 if (result == MessageBoxResult.No) return;
             }
+
+            // 5. Chuẩn bị dữ liệu gửi đi
             var nv = new NhanVien
             {
                 MaNv = SelectedNhanVien.MaNv,
                 HoTen = HoTen,
                 Sdt = Sdt,
                 Email = Email,
+                // Ép chức vụ về "Nhân viên" để đảm bảo không ai leo quyền được
                 ChucVu = ChucVu,
                 MatKhau = MatKhau,
                 TaiKhoan = TaiKhoan
             };
 
+            // 6. Thực hiện gọi API qua lớp xử lý
             if (CXuLyNhanVien.SuaNhanVien(nv))
             {
-                MessageBox.Show("Cập nhật thành công!", "Thông báo");
+                MessageBox.Show("Cập nhật thông tin nhân viên thành công!", "Thông báo");
                 LoadData();
                 LamMoi();
             }
@@ -167,32 +194,46 @@ namespace QLTV_WPF.ViewModels
 
         void Xoa()
         {
+            // 1. Kiểm tra xem đã chọn nhân viên từ danh sách chưa
             if (SelectedNhanVien == null) return;
 
-            var result = MessageBox.Show($"Xác nhận xóa nhân viên: {SelectedNhanVien.HoTen}?",
-                                         "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            // 2. CHẶN XÓA QUẢN LÝ: Quét chức vụ của người đang được chọn
+            if (string.Equals(SelectedNhanVien.ChucVu, "Quản lý", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(SelectedNhanVien.ChucVu, "Admin", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("Đây là tài khoản Quản lý hệ thống. Bạn không có quyền xóa tài khoản này!",
+                                "Lỗi bảo mật", MessageBoxButton.OK, MessageBoxImage.Stop);
+                return;
+            }
+
+            // 3. Nếu là nhân viên bình thường, hiện bảng xác nhận như cũ
+            var result = MessageBox.Show($"Bạn có chắc chắn muốn xóa nhân viên: {SelectedNhanVien.HoTen}?\nLưu ý: Hành động này không thể hoàn tác.",
+                                         "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
 
             if (result == MessageBoxResult.Yes)
             {
+                // 4. Gọi API xóa
                 bool success = CXuLyNhanVien.XoaNhanVien(SelectedNhanVien.MaNv);
 
                 if (success)
                 {
-                    MessageBox.Show("Xóa thành công!", "Thông báo");
-                    LoadData();
-                    LamMoi();
+                    MessageBox.Show("Đã xóa nhân viên thành công!", "Thông báo");
+                    LoadData(); // Load lại danh sách mới
+                    LamMoi();   // Xóa sạch form nhập liệu
                 }
                 else
                 {
-                    MessageBox.Show("Xóa thất bại! Nhân viên này đang cho mượn mượn sách.",
-                                    "Lỗi hệ thống", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // Giữ lại logic thông báo lỗi ràng buộc dữ liệu (FK)
+                    MessageBox.Show("Xóa thất bại! Nhân viên này đang xử lý Phiếu mượn.",
+                                    "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
         void LamMoi()
         {
-            HoTen = Sdt = Email = ChucVu = MatKhau = TaiKhoan = Keyword = string.Empty;
+            HoTen = Sdt = Email = MatKhau = TaiKhoan = Keyword = string.Empty;
+            ChucVu = "Nhân viên"; // Luôn reset về Nhân viên sau khi thêm hoặc làm mới
             SelectedNhanVien = null;
             LoadData();
         }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Text.Json.Serialization;
 namespace QLTV_API.Models
 {
     public partial class PhieuMuon
@@ -17,8 +17,11 @@ namespace QLTV_API.Models
         public DateTime? NgayTra { get; set; }
         public string? GhiChu { get; set; }
 
+        [JsonIgnore]
         public virtual DocGia? MaDocGiaNavigation { get; set; }
+        [JsonIgnore]
         public virtual NhanVien? MaNhanVienNavigation { get; set; }
+        [JsonIgnore]
         public virtual ICollection<ChiTietMuon> ChiTietMuons { get; set; }
     }
 }

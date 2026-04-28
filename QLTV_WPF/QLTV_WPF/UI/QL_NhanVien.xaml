@@ -15,7 +15,7 @@
 
         <Border Grid.Row="1" Background="#EBEDEF" CornerRadius="5" Padding="10" Margin="0,0,0,10">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <TextBlock Text="🔍 Tìm nhân viên:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>
+                <TextBlock Text="🔍 Tìm theo Tên/SĐT:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>
                 <TextBox Width="350" Height="30" VerticalContentAlignment="Center" Margin="0,0,10,0" 
                          Text="{Binding Keyword, UpdateSourceTrigger=PropertyChanged}"/>
                 <Button Content="Tìm kiếm" Width="100" Height="30" Background="#34495E" Foreground="White" FontWeight="Bold"
@@ -41,66 +41,84 @@
 
                 <TextBlock Text="Mã NV (Tự tăng):" VerticalAlignment="Center" Margin="0,5" Foreground="Gray"/>
                 <TextBox Grid.Column="1" Height="30" Margin="5" IsReadOnly="True" Background="#F0F0F0"
+                         VerticalContentAlignment="Center"
                          Text="{Binding SelectedNhanVien.MaNv, Mode=OneWay}"/>
 
                 <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5">
                     <TextBlock Text="Họ tên"/>
                     <TextBlock Text="*" Foreground="Red" Margin="2,0,0,0"/>
                 </StackPanel>
-                <TextBox Grid.Row="1" Grid.Column="1" Height="30" Margin="5" 
-                         MaxLength="50"
+                <TextBox Grid.Row="1" Grid.Column="1" Height="30" Margin="5" MaxLength="50" VerticalContentAlignment="Center"
                          Text="{Binding HoTen, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5">
                     <TextBlock Text="Chức vụ"/>
                     <TextBlock Text="*" Foreground="Red" Margin="2,0,0,0"/>
                 </StackPanel>
-                <ComboBox Grid.Row="2" Grid.Column="1" Height="30" Margin="5" 
-                          SelectedValue="{Binding ChucVu, UpdateSourceTrigger=PropertyChanged}" SelectedValuePath="Content">
-                    <ComboBoxItem Content="Nhân viên"/>
-                    <ComboBoxItem Content="Quản lý"/>
-                </ComboBox>
-
-                <TextBlock Text="Số điện thoại:" Grid.Row="3" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox Grid.Row="3" Grid.Column="1" Height="30" Margin="5" 
-                         MaxLength="20"
+                <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5">
+                    <TextBlock Text="Chức vụ"/>
+                    <TextBlock Text="*" Foreground="Red" Margin="2,0,0,0"/>
+                </StackPanel>
+                <TextBox Grid.Row="2" Grid.Column="1" Height="30" Margin="5" 
+         Text="{Binding ChucVu, UpdateSourceTrigger=PropertyChanged}" 
+         IsReadOnly="True" 
+         Background="#F0F0F0" 
+         VerticalContentAlignment="Center"
+         FontWeight="Bold"
+         Foreground="#2C3E50"/>
+                <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5">
+                    <TextBlock Text="Số điện thoại"/>
+                    <TextBlock Text="*" Foreground="Red" Margin="2,0,0,0"/>
+                </StackPanel>
+                <TextBox Grid.Row="3" Grid.Column="1" Height="30" Margin="5" MaxLength="10" VerticalContentAlignment="Center"
                          Text="{Binding Sdt, UpdateSourceTrigger=PropertyChanged}"/>
+                  
 
                 <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5">
                     <TextBlock Text="Tài khoản"/>
                     <TextBlock Text="*" Foreground="Red" Margin="2,0,0,0"/>
                 </StackPanel>
-                <TextBox Grid.Column="4" Height="30" Margin="5" 
-                         MaxLength="30"
+                <TextBox Grid.Column="4" Height="30" Margin="5" MaxLength="30" VerticalContentAlignment="Center"
                          Text="{Binding TaiKhoan, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,5">
                     <TextBlock Text="Mật khẩu"/>
-                    <TextBlock Text="*" Foreground="Red" Margin="2,0,0,0"/>
                 </StackPanel>
-                <TextBox Grid.Row="1" Grid.Column="4" Height="30" Margin="5" 
+                <TextBox Grid.Row="1" Grid.Column="4" Height="30" Margin="5" VerticalContentAlignment="Center"
                          Text="{Binding MatKhau, UpdateSourceTrigger=PropertyChanged}"/>
 
                 <TextBlock Text="Email:" Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" Margin="0,5"/>
-                <TextBox Grid.Row="2" Grid.Column="4" Height="30" Margin="5" 
+                <TextBox Grid.Row="2" Grid.Column="4" Height="30" Margin="5" VerticalContentAlignment="Center"
                          Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
         </Border>
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,15">
-            <Button Content="➕ Thêm" Width="110" Height="35" Margin="8" Background="#27AE60" Foreground="White" FontWeight="Bold" Command="{Binding cmdThem}"/>
-            <Button Content="✏️ Sửa" Width="110" Height="35" Margin="8" Background="#F39C12" Foreground="White" FontWeight="Bold" Command="{Binding cmdSua}"/>
-            <Button Content="🗑 Xóa" Width="110" Height="35" Margin="8" Background="#E74C3C" Foreground="White" FontWeight="Bold" Command="{Binding cmdXoa}"/>
+            <Button Content="➕ Thêm mới" Width="110" Height="35" Margin="8" Background="#27AE60" Foreground="White" FontWeight="Bold" Command="{Binding cmdThem}"/>
+            <Button Content="✏️ Cập nhật" Width="110" Height="35" Margin="8" Background="#F39C12" Foreground="White" FontWeight="Bold" Command="{Binding cmdSua}"/>
+            <Button Content="🗑 Xóa bỏ" Width="110" Height="35" Margin="8" Background="#E74C3C" Foreground="White" FontWeight="Bold" Command="{Binding cmdXoa}"/>
             <Button Content="🔄 Làm mới" Width="110" Height="35" Margin="8" Background="#3498DB" Foreground="White" FontWeight="Bold" Command="{Binding cmdLamMoi}"/>
         </StackPanel>
 
         <DataGrid Grid.Row="4" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" 
+                  SelectionMode="Single"
                   ItemsSource="{Binding ListNhanVien}" SelectedItem="{Binding SelectedNhanVien}">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Mã NV" Binding="{Binding MaNv}" Width="70"/>
                 <DataGridTextColumn Header="Họ Tên" Binding="{Binding HoTen}" Width="180"/>
                 <DataGridTextColumn Header="Tài khoản" Binding="{Binding TaiKhoan}" Width="120"/>
-                <DataGridTextColumn Header="Chức vụ" Binding="{Binding ChucVu}" Width="110"/>
+                <DataGridTextColumn Header="Chức vụ" Binding="{Binding ChucVu}" Width="110">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ChucVu}" Value="Quản lý">
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="Foreground" Value="Red"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>
                 <DataGridTextColumn Header="SĐT" Binding="{Binding Sdt}" Width="110"/>
                 <DataGridTextColumn Header="Email" Binding="{Binding Email}" Width="*"/>
             </DataGrid.Columns>

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QLTV_API.Models;
+using QLTV_API.ModelsDTO; // Phải có dòng này để gọi được CTacGiaDTO
 using System;
 using System.Linq;
 
@@ -13,48 +13,49 @@ namespace QLTV_API.Controllers
     {
         private QuanLyThuVienContext db = new QuanLyThuVienContext();
 
-        // 1. GET: Lấy danh sách Tác giả
+    
         [HttpGet]
         public IActionResult GetDanhSach()
         {
             try
             {
-                var kq = db.TacGia.Select(t => new
+                var kq = db.TacGia.Select(t => new CTacGiaDTO
                 {
-                    matg = t.MaTg,
-                    tentg = t.TenTg,
-                    tieusu = t.TieuSu
+                    MaTg = t.MaTg,
+                    TenTg = t.TenTg,
+                    TieuSu = t.TieuSu,
+                    Butdanh = t.Butdanh,
+                    Namsinh = t.Namsinh
                 }).ToList();
                 return Ok(kq);
             }
             catch (Exception ex)
             {
-            
                 return BadRequest(ex.Message);
             }
         }
 
-        // 2. POST: Thêm Tác giả
         [HttpPost]
-        public IActionResult Them(TacGia tg)
+        public IActionResult Them(CTacGiaDTO tg)
         {
             try
             {
                 TacGia a = new TacGia
                 {
                     TenTg = tg.TenTg,
-                    TieuSu = tg.TieuSu
+                    TieuSu = tg.TieuSu,
+                    Butdanh = tg.Butdanh,
+                    Namsinh = tg.Namsinh
                 };
                 db.TacGia.Add(a);
                 db.SaveChanges();
-                return Ok(a);
+                return Ok(tg);
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        // 3. PUT: Sửa Tác giả
         [HttpPut("{id}")]
-        public IActionResult Sua(int id, TacGia tg)
+        public IActionResult Sua(int id, CTacGiaDTO tg)
         {
             try
             {
@@ -63,13 +64,15 @@ namespace QLTV_API.Controllers
 
                 a.TenTg = tg.TenTg;
                 a.TieuSu = tg.TieuSu;
+                a.Butdanh = tg.Butdanh;
+                a.Namsinh = tg.Namsinh;
                 db.SaveChanges();
                 return Ok();
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        // 4. DELETE: Xóa Tác giả
+        
         [HttpDelete("{id}")]
         public IActionResult Xoa(int id)
         {
@@ -77,7 +80,6 @@ namespace QLTV_API.Controllers
             {
                 TacGia a = db.TacGia.Find(id);
                 if (a == null) return NotFound();
-
                 db.TacGia.Remove(a);
                 db.SaveChanges();
                 return Ok();

@@ -28,7 +28,22 @@ namespace QLTV_WPF.Models_API
                 return kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode;
             }
         }
-
+        // Thêm vào CXuLyPhieuMuon.cs
+        public static PhieuMuon themVoiKetQua(PhieuMuon pm)
+        {
+            using (HttpClient hc = new HttpClient())
+            {
+                var kq = hc.PostAsJsonAsync(strurl, pm);
+                kq.Wait();
+                if (kq.IsCompletedSuccessfully && kq.Result.IsSuccessStatusCode)
+                {
+                    var phieuMoi = kq.Result.Content.ReadFromJsonAsync<PhieuMuon>();
+                    phieuMoi.Wait();
+                    return phieuMoi.Result;
+                }
+                return null;
+            }
+        }
         public static bool sua(PhieuMuon pm)
         {
             using (HttpClient hc = new HttpClient())

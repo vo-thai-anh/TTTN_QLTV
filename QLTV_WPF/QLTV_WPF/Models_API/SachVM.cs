@@ -21,6 +21,7 @@ namespace QLTV_WPF.Models_API
             cmdxoasach = new RelayCommand(XoaSach_Execute, XoaSach_CanExecute);
             cmdlammoi = new RelayCommand(p => LamMoi());
             cmdMoKhoSach = new RelayCommand(MoKhoSach_Execute, MoKhoSach_CanExecute);
+            cmdsearch = new RelayCommand(p => Search());
 
             cmdQuanLyTacGia = new RelayCommand(p => {
                 if (SelectedSach != null)
@@ -50,6 +51,7 @@ namespace QLTV_WPF.Models_API
         public RelayCommand cmdlammoi { get; set; }
         public RelayCommand cmdMoKhoSach { get; set; }
         public RelayCommand cmdQuanLyTacGia { get; set; }
+        public RelayCommand cmdsearch { get; set; }
 
         // Danh sách sách hiển thị lên DataGrid
         private List<Sach> m_listSach;
@@ -128,6 +130,17 @@ namespace QLTV_WPF.Models_API
             get { return m_manxb; }
             set { m_manxb = value; NotifyPropertyChanged("Manxb"); }
         }
+        private string _keyword;
+        public string Keyword
+        {
+            get => _keyword;
+            set
+            {
+                _keyword = value;
+                NotifyPropertyChanged("Keyword");
+                Search(); // Tự động tìm kiếm mỗi khi gõ phím
+            }
+        }
 
         // Chọn một dòng trên DataGrid
         private Sach m_selectedSach;
@@ -205,6 +218,28 @@ namespace QLTV_WPF.Models_API
         public bool ThemSach_CanExecute(object parameter)
         {
             return true; // Có thể bổ sung check string.IsNullOrEmpty(Tensach) ở đây
+        }
+
+        void Search()
+        {
+            // 1. Nếu ô tìm kiếm trống -> Tải lại toàn bộ danh sách từ Database
+            if (string.IsNullOrWhiteSpace(Keyword))
+            {
+                ListSach = CXuLySach.getdssach(); // Lấy lại toàn bộ sách gốc
+                return;
+            }
+
+            string lower = Keyword.Trim().ToLower();
+
+            // 2. Bước A: Lấy lại danh sách đầy đủ nhất từ API trước khi lọc
+            var danhSachGoc = CXuLySach.getdssach();
+
+            // 3. Bước B: Tiến hành lọc trên danh sách gốc
+            ListSach = danhSachGoc.Where(x =>
+                (x.TenSach != null && x.TenSach.ToLower().Contains(lower)) ||
+                (x.TenTacGia != null && x.TenTacGia.ToLower().Contains(lower)) ||
+                (x.TenLoai != null && x.TenLoai.ToLower().Contains(lower)) // Lọc theo thể loại
+            ).ToList();
         }
 
         // Sửa Sách

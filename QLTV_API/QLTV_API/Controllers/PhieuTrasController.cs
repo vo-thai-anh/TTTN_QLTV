@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QLTV_API.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,99 +19,170 @@ namespace QLTV_API.Controllers
             _context = context;
         }
 
+        // Helper: chỉ lấy các trường scalar, KHÔNG load navigation properties
+        private static PhieuTra ToFlat(PhieuTra p) => new PhieuTra
+        {
+            MaPhieuTra = p.MaPhieuTra,
+            MaNhanVien = p.MaNhanVien,
+            NgayTra = p.NgayTra,
+            TongTienPhat = p.TongTienPhat,
+            GhiChu = p.GhiChu
+        };
+
         // 1. GET: api/PhieuTras
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PhieuTra>>> GetPhieuTras()
         {
-            return await _context.PhieuTras
-                .Include(p => p.MaNhanVienNavigation)
-                .ToListAsync();
+            try
+            {
+                // Dùng Select() để chỉ lấy scalar fields — tuyệt đối không load navigation
+                var list = await _context.PhieuTras
+                    .Select(p => new PhieuTra
+                    {
+                        MaPhieuTra = p.MaPhieuTra,
+                        MaNhanVien = p.MaNhanVien,
+                        NgayTra = p.NgayTra,
+                        TongTienPhat = p.TongTienPhat,
+                        GhiChu = p.GhiChu
+                    })
+                    .ToListAsync();
+
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi tải phiếu trả: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
 
         // 2. GET: api/PhieuTras/5
         [HttpGet("{id}")]
         public async Task<ActionResult<PhieuTra>> GetPhieuTra(int id)
         {
-            var pt = await _context.PhieuTras
-                .Include(p => p.MaNhanVienNavigation)
-                .FirstOrDefaultAsync(p => p.MaPhieuTra == id);
+            try
+            {
+                var pt = await _context.PhieuTras
+                    .Where(p => p.MaPhieuTra == id)
+                    .Select(p => new PhieuTra
+                    {
+                        MaPhieuTra = p.MaPhieuTra,
+                        MaNhanVien = p.MaNhanVien,
+                        NgayTra = p.NgayTra,
+                        TongTienPhat = p.TongTienPhat,
+                        GhiChu = p.GhiChu
+                    })
+                    .FirstOrDefaultAsync();
 
-            if (pt == null)
-                return NotFound("Không tìm thấy phiếu trả.");
+                if (pt == null)
+                    return NotFound("Không tìm thấy phiếu trả.");
 
-            return pt;
+                return Ok(pt);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
 
         // 3. POST: Thêm mới
         [HttpPost]
-        public async Task<ActionResult<PhieuTra>> PostPhieuTra(PhieuTra pt)
+        public async Task<ActionResult<PhieuTra>> PostPhieuTra([FromBody] PhieuTra pt)
         {
-            // Reset ID
-            pt.MaPhieuTra = 0;
+            try
+            {
+                // Đặt lại ID để DB tự sinh (identity)
+                pt.MaPhieuTra = 0;
 
-            // --- VALIDATION ---
-            if (pt.MaNhanVien == null)
-                return BadRequest("Lỗi: Phải chọn nhân viên.");
+                // Xóa navigation để EF không cố insert entity liên quan
+                pt.MaNhanVienNavigation = null;
+                pt.ChiTietMuons?.Clear();
 
-            if (pt.NgayTra == null)
-                return BadRequest("Lỗi: Ngày trả không được để trống.");
+                // Validation
+                if (pt.MaNhanVien == null)
+                    return BadRequest("Lỗi: Phải chọn nhân viên.");
 
-            if (pt.TongTienPhat < 0)
-                return BadRequest("Lỗi: Tiền phạt không hợp lệ.");
+                if (pt.NgayTra == null)
+                    return BadRequest("Lỗi: Ngày trả không được để trống.");
 
-            if (pt.GhiChu?.Length > 200)
-                return BadRequest("Lỗi: Ghi chú tối đa 200 ký tự.");
+                if (pt.TongTienPhat.HasValue && pt.TongTienPhat < 0)
+                    return BadRequest("Lỗi: Tiền phạt không hợp lệ.");
 
-            // --- LƯU ---
-            _context.PhieuTras.Add(pt);
-            await _context.SaveChangesAsync();
+                // Kiểm tra nhân viên tồn tại
+                if (!await _context.NhanViens.AnyAsync(nv => nv.MaNv == pt.MaNhanVien))
+                    return BadRequest($"Lỗi: Nhân viên mã {pt.MaNhanVien} không tồn tại.");
 
-            return CreatedAtAction(nameof(GetPhieuTra), new { id = pt.MaPhieuTra }, pt);
+                _context.PhieuTras.Add(pt);
+                await _context.SaveChangesAsync();
+
+                return Ok(ToFlat(pt));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi thêm phiếu trả: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
 
         // 4. PUT: Cập nhật
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPhieuTra(int id, PhieuTra pt)
+        public async Task<IActionResult> PutPhieuTra(int id, [FromBody] PhieuTra pt)
         {
-            pt.MaPhieuTra = id;
-
-            if (pt.MaNhanVien == null)
-                return BadRequest("Lỗi: Phải chọn nhân viên.");
-
-            _context.Entry(pt).State = EntityState.Modified;
-
             try
             {
+                pt.MaPhieuTra = id;
+
+                // Xóa navigation để EF không cố update entity liên quan
+                pt.MaNhanVienNavigation = null;
+                pt.ChiTietMuons?.Clear();
+
+                if (pt.MaNhanVien == null)
+                    return BadRequest("Lỗi: Phải chọn nhân viên.");
+
+                if (pt.NgayTra == null)
+                    return BadRequest("Lỗi: Ngày trả không được để trống.");
+
+                if (!await _context.NhanViens.AnyAsync(nv => nv.MaNv == pt.MaNhanVien))
+                    return BadRequest($"Lỗi: Nhân viên mã {pt.MaNhanVien} không tồn tại.");
+
+                if (!await _context.PhieuTras.AnyAsync(e => e.MaPhieuTra == id))
+                    return NotFound("Không tìm thấy phiếu trả.");
+
+                _context.Entry(pt).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
+
+                return Ok("Cập nhật phiếu trả thành công.");
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!_context.PhieuTras.Any(e => e.MaPhieuTra == id))
-                    return NotFound("Không tìm thấy phiếu trả.");
-                else throw;
+                return Conflict("Dữ liệu đã bị thay đổi bởi người khác, vui lòng tải lại.");
             }
-
-            return Ok("Cập nhật phiếu trả thành công.");
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi cập nhật: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
 
         // 5. DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePhieuTra(int id)
         {
-            var pt = await _context.PhieuTras.FindAsync(id);
-
-            if (pt == null)
-                return NotFound("Không tìm thấy phiếu trả.");
-
             try
             {
+                var pt = await _context.PhieuTras.FindAsync(id);
+
+                if (pt == null)
+                    return NotFound("Không tìm thấy phiếu trả.");
+
                 _context.PhieuTras.Remove(pt);
                 await _context.SaveChangesAsync();
                 return Ok("Đã xóa phiếu trả thành công.");
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
-                return BadRequest("Lỗi: Phiếu trả này có dữ liệu liên quan, không thể xóa!");
+                return BadRequest($"Không thể xóa: Phiếu trả này còn chi tiết liên quan. ({ex.InnerException?.Message ?? ex.Message})");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi khi xóa: {ex.InnerException?.Message ?? ex.Message}");
             }
         }
 
@@ -119,14 +190,30 @@ namespace QLTV_API.Controllers
         [HttpGet("Search")]
         public async Task<ActionResult<IEnumerable<PhieuTra>>> SearchPhieuTra(string keyword)
         {
-            if (string.IsNullOrEmpty(keyword))
-                return await _context.PhieuTras.ToListAsync();
+            try
+            {
+                var query = _context.PhieuTras.AsQueryable();
 
-            var result = await _context.PhieuTras
-                .Where(p => p.GhiChu.Contains(keyword))
-                .ToListAsync();
+                if (!string.IsNullOrWhiteSpace(keyword))
+                    query = query.Where(p => p.GhiChu != null && p.GhiChu.Contains(keyword));
 
-            return Ok(result);
+                var list = await query
+                    .Select(p => new PhieuTra
+                    {
+                        MaPhieuTra = p.MaPhieuTra,
+                        MaNhanVien = p.MaNhanVien,
+                        NgayTra = p.NgayTra,
+                        TongTienPhat = p.TongTienPhat,
+                        GhiChu = p.GhiChu
+                    })
+                    .ToListAsync();
+
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Lỗi tìm kiếm: {ex.InnerException?.Message ?? ex.Message}");
+            }
         }
     }
 }
